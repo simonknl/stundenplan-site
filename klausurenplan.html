@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Klausurenplan · IFB</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -63,12 +63,14 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 
 .ex-mhdr{padding:10px 18px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);background:var(--surface-2);border-top:1px solid var(--border)}
 .ex-mhdr:first-child{border-top:none}
-.ex-row{display:flex;align-items:center;gap:10px;padding:8px 18px;border-top:1px solid var(--border-s);transition:background .1s}
+.ex-row{display:flex;align-items:center;gap:10px;padding:9px 18px;border-top:1px solid var(--border-s);transition:background .1s}
 .ex-row:hover{background:var(--surface-2)}
 .ex-row.past{opacity:.35}
 .ex-dot{width:8px;height:8px;border-radius:50%;background:var(--sc);flex-shrink:0}
-.ex-date{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);width:64px;flex-shrink:0}
+.ex-date{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);width:76px;flex-shrink:0;line-height:1.35}
+.ex-date-day{font-size:10px;color:var(--subtle);display:block}
 .ex-subj{flex:1;font-weight:600;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--subtle);flex-shrink:0;white-space:nowrap}
 .ex-badge{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;flex-shrink:0}
 .eb-today{background:#fee2e2;color:#dc2626}
 .eb-soon{background:#fef3c7;color:#d97706}
@@ -92,6 +94,21 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .sc-exc{--sc:#65a30d}.sc-ki{--sc:#a855f7}.sc-wima{--sc:#f43f5e}.sc-inv{--sc:#0ea5e9}
 .sc-voc{--sc:#fb923c}.sc-sql{--sc:#0891b2}.sc-geo{--sc:#78716c}.sc-phy{--sc:#7c3aed}
 .sc-sowe{--sc:#84cc16}.sc-zzz{--sc:#94a3b8}
+.ex-row{cursor:pointer}
+.ex-row.subj-hi{outline:2px solid var(--sc);outline-offset:-2px;z-index:2}
+.ex-row.subj-dim{opacity:.28}
+#examTip{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0;box-shadow:var(--shadow);font-size:12px;z-index:1000;min-width:210px;max-width:260px;max-height:380px;overflow-y:auto;display:none}
+#examTip.vis{display:block}
+.etp-head{padding:10px 14px 8px}
+.etp-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.etp-row{color:var(--muted);margin-top:3px;font-size:11px}
+.etp-sep{border:none;border-top:1px solid var(--border);margin:0}
+.etp-item{display:flex;align-items:center;gap:8px;padding:5px 14px;border-top:1px solid var(--border-s);font-size:11px}
+.etp-item.is-past{opacity:.4}
+.etp-item.is-cur{background:var(--surface-2)}
+.etp-idate{color:var(--muted);flex-shrink:0;width:60px}
+.etp-ilbl{flex:1;font-weight:600;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.etp-ibadge{font-size:10px;font-weight:700;border-radius:999px;padding:1px 6px;flex-shrink:0}
 footer{text-align:center;padding:20px 0 16px;font-size:11px;color:var(--subtle)}
 footer a{color:var(--muted);text-decoration:none}
 footer a:hover{color:var(--text)}
@@ -107,7 +124,7 @@ footer a:hover{color:var(--text)}
   </div>
   <div class="header-actions">
     <nav style="display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;box-shadow:var(--shadow-sm)">
-      <a href="stundenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Stundenplan</a>
+      <a href="stundenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Dashboard</a>
       <a href="klausurenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:#fff;background:var(--blue);text-decoration:none;white-space:nowrap">Klausurenplan</a>
       <a href="notenrechner.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Notenrechner</a>
     </nav>
@@ -157,6 +174,11 @@ const SM = {
   KI:{l:'Künstl. Intell.',c:'sc-ki'},Wima:{l:'Wirtschaftsmath.',c:'sc-wima'},SQL:{l:'SQL',c:'sc-sql'},
 };
 function sm(s){return SM[s]||{l:s,c:'sc-zzz'}}
+
+const TEACHERS = {
+  info1:{JAVA:'Zeit',Linux:'Ober',E:'Bon',BWL:'Breth',Rewe:'Breth',Orga:'Breth',Acc:'Breth',DVHard:'Ber',DVNet:'Ber',WEB:'Wink',KI:'Wink',Python:'Wink',Exc:'Berndt',Ma:'–',SQL:'–'},
+  info2:{JAVA:'Zeit',Linux:'Ober',E:'Bon',BWL:'Breth',Rewe:'Breth',Orga:'Breth',DVNet:'Ber',WEB:'Wink',KI:'Wink',Python:'Wink',SQL:'–'},
+};
 
 const EXAMS = {
   info1:[
@@ -241,7 +263,8 @@ const MNS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','D
 function parseD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
 function todayMid(){const d=new Date();d.setHours(0,0,0,0);return d}
 function daysUntil(s){return Math.round((parseD(s)-todayMid())/86400000)}
-function fmtDateShort(d){return DWK[d.getDay()]+' '+p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'}
+function fmtDateShort(d){return p2(d.getDate())+'. '+MNS[d.getMonth()]}
+function fmtDateDay(d){return DWS[d.getDay()]}
 
 let isDark=localStorage.getItem('sp-theme')==='dark';
 let selCls=localStorage.getItem('sp-class')||'info1';
@@ -281,7 +304,9 @@ function renderNex(){
   else if(next.days===1){bc='nb-soon';bt='Morgen';}
   else if(next.days<=4){bc='nb-soon';bt='in '+next.days+' Tagen';}
   else{bc='nb-norm';bt='in '+next.days+' Tagen';}
-  el.innerHTML=`<div class="nex-body"><div class="nex-ey">${next.t}</div><div class="nex-subj ${m.c}" style="color:var(--sc)">${next.l}</div><div class="nex-date">${DWS[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]} ${d.getFullYear()}</div><div class="nex-badge ${bc}">${bt}</div></div>`;
+  const fullDate=`${DWS[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]} ${d.getFullYear()}`;
+  const countdown=next.days===0?'Heute':next.days===1?'Morgen':'in '+next.days+' Tagen';
+  el.innerHTML=`<div class="nex-body"><div class="nex-ey">${next.t==='AP'?'Abschlussprüfung':next.t}</div><div class="nex-subj ${m.c}" style="color:var(--sc)">${next.l}</div><div class="nex-date">${fullDate}</div><div style="display:flex;align-items:center;gap:8px;margin-top:9px"><div class="nex-badge ${bc}" style="margin:0">${countdown}</div></div></div>`;
 }
 
 function renderExams(){
@@ -314,16 +339,90 @@ function renderExams(){
     else if(days===0){bc='eb-today';bt='HEUTE';}
     else if(days<=3){bc='eb-soon';bt=days===1?'morgen':'in '+days+' T.';}
     else{bc='eb-fut';bt='in '+days+' T.';}
-    html+=`<div class="ex-row${past?' past':''} ${m.c}"><div class="ex-dot"></div><div class="ex-date">${fmtDateShort(d)}</div><div class="ex-subj">${ex.l}</div><div class="ex-badge ${bc}">${bt}</div></div>`;
+    const typLbl = ex.t === 'Klausur' ? 'Klausur' : ex.t === 'AP' ? 'Abschlussprüfung' : ex.t;
+    html+=`<div class="ex-row${past?' past':''} ${m.c}" data-s="${ex.s}" data-date="${ex.date}"><div class="ex-dot"></div><div class="ex-date"><span class="ex-date-day">${fmtDateDay(d)}</span>${fmtDateShort(d)}</div><div class="ex-subj">${ex.l}</div><div class="ex-type">${typLbl}</div><div class="ex-badge ${bc}">${bt}</div></div>`;
   }
   el.innerHTML=html;
 }
 
 function renderAll(){renderNex();renderExams();}
+
+// ─── TOOLTIP + HIGHLIGHT (wie Stundenplan) ───────────────────────────────────
+let activeSubj = null;
+
+function highlightSubj(s) {
+  document.querySelectorAll('.ex-row').forEach(r => {
+    if (r.dataset.s === s) r.classList.add('subj-hi');
+    else r.classList.add('subj-dim');
+  });
+}
+function clearHighlight() {
+  activeSubj = null;
+  document.querySelectorAll('.ex-row').forEach(r => r.classList.remove('subj-hi','subj-dim'));
+}
+function hideTip() { document.getElementById('examTip').classList.remove('vis'); }
+
+function showTip(row, subj, date) {
+  const exams = EXAMS[selCls] || [];
+  const m = sm(subj);
+  const teacher = (TEACHERS[selCls] || {})[subj] || '–';
+  const today = todayMid();
+  const subjExams = exams.filter(e => e.s === subj);
+
+  let itemsHtml = '';
+  for (const ex of subjExams) {
+    const d = parseD(ex.date);
+    const days = daysUntil(ex.date);
+    const past = d < today;
+    const isCur = ex.date === date;
+    let bc, bt;
+    if (ex.t === 'AP')           { bc = 'eb-ap';    bt = 'AP'; }
+    else if (ex.t === 'Zeugnis') { bc = 'eb-zg';    bt = 'Zeugnis'; }
+    else if (past)               { bc = 'eb-fut';   bt = 'vorbei'; }
+    else if (days === 0)         { bc = 'eb-today'; bt = 'HEUTE'; }
+    else if (days <= 3)          { bc = 'eb-soon';  bt = days===1?'morgen':'in '+days+' T.'; }
+    else                         { bc = 'eb-fut';   bt = 'in '+days+' T.'; }
+    itemsHtml += `<div class="etp-item${past?' is-past':''}${isCur?' is-cur':''}"><span class="etp-idate">${DWK[d.getDay()]} ${fmtDateShort(d)}</span><span class="etp-ilbl">${ex.l}</span><span class="etp-ibadge ${bc}">${bt}</span></div>`;
+  }
+
+  const tip = document.getElementById('examTip');
+  tip.innerHTML = `<div class="etp-head"><div class="etp-name ${m.c}" style="color:var(--sc)">${m.l}</div><div class="etp-row">Lehrer · ${teacher}</div><div class="etp-row">Zeit · 08:00 Uhr</div></div><hr class="etp-sep">${itemsHtml}`;
+
+  const rect = row.getBoundingClientRect();
+  let left = rect.right + 8, top = rect.top;
+  if (left + 268 > window.innerWidth - 10) left = rect.left - 276;
+  if (left < 8) left = 8;
+  if (top + 400 > window.innerHeight - 10) top = window.innerHeight - 408;
+  if (top < 8) top = 8;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.classList.add('vis');
+}
+
+document.getElementById('examList').addEventListener('click', e => {
+  const row = e.target.closest('.ex-row');
+  if (!row) { clearHighlight(); hideTip(); return; }
+  const subj = row.dataset.s;
+  if (subj === activeSubj) { clearHighlight(); hideTip(); return; }
+  clearHighlight();
+  activeSubj = subj;
+  highlightSubj(subj);
+  showTip(row, subj, row.dataset.date);
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#examList') && !e.target.closest('#examTip')) {
+    clearHighlight(); hideTip();
+  }
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { clearHighlight(); hideTip(); } });
+
 applyTheme();
 renderAll();
 lucide.createIcons();
 </script>
+<div id="examTip"></div>
 <footer>
   <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
 </footer>

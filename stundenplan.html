@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stundenplan · IFB</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Dashboard · IFB</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -236,12 +236,12 @@ footer a:hover{color:var(--text)}
 
 <div class="header">
   <div class="header-title">
-    <h1>Stundenplan</h1>
+    <h1>Dashboard</h1>
     <div class="sub" id="headerSub">ab 09.&thinsp;März 2026</div>
   </div>
   <div class="header-actions">
     <nav style="display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;box-shadow:var(--shadow-sm)">
-      <a href="stundenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:#fff;background:var(--blue);text-decoration:none;white-space:nowrap">Stundenplan</a>
+      <a href="stundenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:#fff;background:var(--blue);text-decoration:none;white-space:nowrap">Dashboard</a>
       <a href="klausurenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Klausurenplan</a>
       <a href="notenrechner.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Notenrechner</a>
     </nav>
@@ -919,7 +919,7 @@ function exportIcal(){
     }
   }
   const cal=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//IFB//Stundenplan//DE',
-    `X-WR-CALNAME:${cls.name} · Stundenplan`,'CALSCALE:GREGORIAN',
+    `X-WR-CALNAME:${cls.name} · Dashboard`,'CALSCALE:GREGORIAN',
     ...events,'END:VCALENDAR'].join('\r\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([cal],{type:'text/calendar;charset=utf-8'}));
