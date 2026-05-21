@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="dark">
+<html lang="de" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
   --bg:#f0f4f9;--surface:#fff;--surface-2:#f8fafc;--border:#e2e8f0;--border-s:#f0f4f8;
@@ -145,12 +146,41 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
 
 @media(max-width:560px){
   .nav-links{display:none}
-  .mode-tabs{gap:2px}
-  .mt-btn{font-size:12px;padding:6px 4px}
+  .subject-tabs{gap:0}
+  .subject-tab{font-size:12px;padding:0 10px}
   .grade-table th,.grade-table td{padding-left:10px}
   .preset-bar{gap:4px}
   .preset-btn{font-size:11px;padding:3px 8px}
 }
+
+.subject-tabs{display:flex;gap:2px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:2px;box-shadow:var(--shadow-sm);overflow-x:auto;align-items:center}
+.subject-tab{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s;font-family:inherit;white-space:nowrap}
+.subject-tab:hover{background:var(--surface-2);color:var(--text)}
+.subject-tab.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(59,130,246,.25)}
+.subject-tab.add-subject{padding:0 10px;border:1px dashed var(--border);margin-left:auto}
+.subject-tab.add-subject:hover{border-color:var(--blue);color:var(--blue)}
+.subject-tab.create-hint{font-style:italic;border:1px dashed var(--border)}
+.subject-tab.create-hint:hover{border-color:var(--blue);color:var(--blue)}
+.tab-del{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:2px;border-radius:3px;font-size:15px;line-height:1;opacity:.5}
+.subject-tab.active .tab-del:hover{opacity:1;background:rgba(255,255,255,.2)}
+.subject-tab:not(.active) .tab-del:hover{opacity:1;background:rgba(0,0,0,.09)}
+[data-theme=dark] .subject-tab:not(.active) .tab-del:hover{background:rgba(255,255,255,.1)}
+
+.overall-mini{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-top:8px;box-shadow:var(--shadow-sm)}
+.overall-mini-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--subtle)}
+.overall-mini-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.overall-mini-sub{font-size:11px;color:var(--muted);margin-left:auto}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal-box{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:24px;max-width:400px;width:90%}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:12px}
+.modal-input{width:100%;margin-bottom:16px}
+.modal-buttons{display:flex;gap:8px;justify-content:flex-end}
+.modal-btn{padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-weight:600;cursor:pointer;font-family:inherit;font-size:13px}
+.modal-btn:hover{background:var(--border)}
+.modal-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.modal-btn.primary:hover{background:#2563eb}
 </style>
 </head>
 <body>
@@ -173,180 +203,91 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
   </div>
 </div>
 
-<div class="mode-tabs">
-  <button class="mt-btn active" data-mode="rechner">Notenrechner</button>
-  <button class="mt-btn" data-mode="oberstufe">Oberstufe</button>
-  <button class="mt-btn" data-mode="ziel">Zielnotenrechner</button>
-</div>
+<div class="subject-tabs" id="subjectTabs"></div>
 
-<!-- ─── PANEL: RECHNER ─────────────────────────────────────────────────────── -->
-<div class="panel active" id="panel-rechner">
-  <div class="card">
-    <div class="card-head">
-      <i data-lucide="list" style="width:14px;height:14px" class="chi"></i>
-      <h2>Noten</h2>
-    </div>
-    <div class="preset-bar">
-      <span class="preset-lbl">Hinzufügen:</span>
-      <button class="preset-btn" onclick="addPreset('Schulaufgabe',2)">Schulaufgabe <span class="pw">2×</span></button>
-      <button class="preset-btn" onclick="addPreset('Ex',1)">Ex <span class="pw">1×</span></button>
-      <button class="preset-btn" onclick="addPreset('Mündlich',1)">Mündlich <span class="pw">1×</span></button>
-      <button class="preset-btn" onclick="addPreset('Kurzarbeit',1.5)">Kurzarbeit <span class="pw">1,5×</span></button>
-      <button class="preset-btn" onclick="addPreset('Referat',1)">Referat <span class="pw">1×</span></button>
-    </div>
-    <table class="grade-table">
-      <thead>
-        <tr>
-          <th>Bezeichnung</th>
-          <th class="tc" style="width:74px">Note</th>
-          <th class="tc" style="width:70px">Gewicht</th>
-          <th style="width:38px"></th>
-        </tr>
-      </thead>
-      <tbody id="gradeBody"></tbody>
-    </table>
-    <div class="add-row">
-      <button class="add-btn" onclick="addEntry()">
-        <i data-lucide="plus" style="width:13px;height:13px"></i>
-        Eintrag hinzufügen
-      </button>
-    </div>
-    <div class="io-bar">
-      <button class="io-btn" onclick="exportJSON()"><i data-lucide="download" style="width:12px;height:12px"></i> Export</button>
-      <button class="io-btn" onclick="importJSON()"><i data-lucide="upload" style="width:12px;height:12px"></i> Import</button>
-      <button class="io-btn danger" style="margin-left:auto" onclick="clearAll()"><i data-lucide="trash-2" style="width:12px;height:12px"></i> Löschen</button>
-    </div>
+<div class="card">
+  <div class="card-head">
+    <i data-lucide="list" style="width:14px;height:14px" class="chi"></i>
+    <h2 id="subjectTitle">Fach</h2>
   </div>
-  <div id="resultWrap"></div>
-</div>
-
-<!-- ─── PANEL: OBERSTUFE ───────────────────────────────────────────────────── -->
-<div class="panel" id="panel-oberstufe">
-  <div class="card">
-    <div class="ob-head">
-      <span class="ob-head-title">Leistungskurse</span>
-      <span class="ob-badge">2-fach gewichtet</span>
-    </div>
-    <table class="grade-table">
-      <thead>
-        <tr>
-          <th>Fach</th>
-          <th class="tc" style="width:80px">Punkte (0–15)</th>
-          <th style="width:38px"></th>
-        </tr>
-      </thead>
-      <tbody id="lkBody"></tbody>
-    </table>
-    <div class="add-row">
-      <button class="add-btn" onclick="addObEntry('lk')">
-        <i data-lucide="plus" style="width:13px;height:13px"></i>
-        Leistungskurs hinzufügen
-      </button>
-    </div>
+  <div class="preset-bar">
+    <span class="preset-lbl">Hinzufügen:</span>
+    <button class="preset-btn" onclick="addPreset('Schulaufgabe',2)">Schulaufgabe <span class="pw">2×</span></button>
+    <button class="preset-btn" onclick="addPreset('Ex',1)">Ex <span class="pw">1×</span></button>
+    <button class="preset-btn" onclick="addPreset('Mündlich',1)">Mündlich <span class="pw">1×</span></button>
+    <button class="preset-btn" onclick="addPreset('Kurzarbeit',1.5)">Kurzarbeit <span class="pw">1,5×</span></button>
+    <button class="preset-btn" onclick="addPreset('Referat',1)">Referat <span class="pw">1×</span></button>
   </div>
-  <div class="card">
-    <div class="ob-head">
-      <span class="ob-head-title">Grundkurse</span>
-      <span class="ob-badge">1-fach gewichtet</span>
-    </div>
-    <table class="grade-table">
-      <thead>
-        <tr>
-          <th>Fach</th>
-          <th class="tc" style="width:80px">Punkte (0–15)</th>
-          <th style="width:38px"></th>
-        </tr>
-      </thead>
-      <tbody id="gkBody"></tbody>
-    </table>
-    <div class="add-row">
-      <button class="add-btn" onclick="addObEntry('gk')">
-        <i data-lucide="plus" style="width:13px;height:13px"></i>
-        Grundkurs hinzufügen
-      </button>
-    </div>
+  <table class="grade-table">
+    <thead>
+      <tr>
+        <th>Bezeichnung</th>
+        <th class="tc" style="width:74px">Note</th>
+        <th class="tc" style="width:70px">Gewicht</th>
+        <th style="width:38px"></th>
+      </tr>
+    </thead>
+    <tbody id="gradeBody"></tbody>
+  </table>
+  <div class="add-row">
+    <button class="add-btn" onclick="addEntry()">
+      <i data-lucide="plus" style="width:13px;height:13px"></i>
+      Eintrag hinzufügen
+    </button>
   </div>
-  <div id="obResultWrap"></div>
-</div>
-
-<!-- ─── PANEL: ZIEL ────────────────────────────────────────────────────────── -->
-<div class="panel" id="panel-ziel">
-  <div class="card">
-    <div class="card-head">
-      <i data-lucide="target" style="width:14px;height:14px" class="chi"></i>
-      <h2>Zielnotenrechner</h2>
-    </div>
-    <div class="ziel-body">
-      <div id="zielSrc" class="ziel-src">Kein Schnitt berechnet — trage zuerst Noten im Notenrechner ein.</div>
-
-      <div class="ziel-row">
-        <span class="ziel-lbl">Aktueller Schnitt</span>
-        <input type="text" class="inp" style="max-width:90px" id="zielCurAvg" placeholder="z.B. 2,5" oninput="calcZiel()">
-      </div>
-      <div class="ziel-row">
-        <span class="ziel-lbl">Gesamtgewicht bisher</span>
-        <input type="number" class="inp" style="max-width:90px" id="zielTotalW" placeholder="z.B. 6" min="0" step="0.5" oninput="calcZiel()">
-      </div>
-      <div class="ziel-row">
-        <span class="ziel-lbl">Gewünschter Zielschnitt</span>
-        <input type="text" class="inp" style="max-width:90px" id="zielTarget" placeholder="z.B. 2,0" oninput="calcZiel()">
-      </div>
-      <div class="ziel-row">
-        <span class="ziel-lbl">Nächste Note — Gewicht</span>
-        <select class="inp" style="max-width:190px" id="zielNextW" onchange="calcZiel()">
-          <option value="2">Schulaufgabe (2×)</option>
-          <option value="1.5">Kurzarbeit (1,5×)</option>
-          <option value="1" selected>Ex / Mündlich (1×)</option>
-          <option value="0.5">Kleinere Note (0,5×)</option>
-        </select>
-      </div>
-
-      <div id="zielResult"></div>
-    </div>
+  <div class="io-bar">
+    <button class="io-btn" onclick="exportCSV()"><i data-lucide="download" style="width:12px;height:12px"></i> CSV</button>
+    <button class="io-btn" onclick="exportPDF()"><i data-lucide="download" style="width:12px;height:12px"></i> PDF</button>
+    <button class="io-btn" onclick="importCSV()"><i data-lucide="upload" style="width:12px;height:12px"></i> Import</button>
+    <button class="io-btn danger" style="margin-left:auto" onclick="removeSub()"><i data-lucide="trash-2" style="width:12px;height:12px"></i> Fach löschen</button>
   </div>
 </div>
+
+<div id="resultWrap"></div>
+<div id="overallResult"></div>
 
 </div><!-- .page -->
 
-<input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+<input type="file" id="importFile" accept=".csv" style="display:none" onchange="handleImport(event)">
+
+<div class="modal" id="addSubjectModal">
+  <div class="modal-box">
+    <div class="modal-title">Neues Fach erstellen</div>
+    <input type="text" class="inp modal-input" id="subjectNameInput" placeholder="z.B. Deutsch, Mathematik, Englisch...">
+    <div class="modal-buttons">
+      <button class="modal-btn" onclick="closeAddSubject()">Abbrechen</button>
+      <button class="modal-btn primary" onclick="addSubject()">Erstellen</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ─── GRADE SYSTEM ─────────────────────────────────────────────────────────────
-const G = {
-  '1+':0.75,'1':1.0,'1-':1.25,
-  '2+':1.75,'2':2.0,'2-':2.25,
-  '3+':2.75,'3':3.0,'3-':3.25,
-  '4+':3.75,'4':4.0,'4-':4.25,
-  '5+':4.75,'5':5.0,'5-':5.25,
-  '6':6.0
-};
-const GKEYS = ['1+','1','1-','2+','2','2-','3+','3','3-','4+','4','4-','5+','5','5-','6'];
+const G = {'1': 1.0, '2': 2.0, '3': 3.0, '4': 4.0, '5': 5.0, '6': 6.0};
+const GKEYS = ['1', '2', '3', '4', '5', '6'];
 
 function gradeInfo(avg) {
   if (avg <= 1.5) return { label: 'sehr gut',       cls: 'rc-green'  };
   if (avg <= 2.5) return { label: 'gut',             cls: 'rc-blue'   };
   if (avg <= 3.5) return { label: 'befriedigend',    cls: 'rc-yellow' };
-  if (avg <= 4.0) return { label: 'ausreichend',     cls: 'rc-orange' };
-  if (avg <= 5.0) return { label: 'mangelhaft',      cls: 'rc-red'    };
+  if (avg <= 4.5) return { label: 'ausreichend',     cls: 'rc-orange' };
+  if (avg <= 5.5) return { label: 'mangelhaft',      cls: 'rc-red'    };
   return                  { label: 'ungenügend',     cls: 'rc-red'    };
 }
 
 function fmtDE(n, d=2) { return n.toFixed(d).replace('.', ','); }
-function parseDE(s)     { return parseFloat(String(s).replace(',', '.')); }
 function esc(s)         { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let nid = 1;
-let entries  = [];  // {id, name, grade, weight}
-let obLK     = [];  // {id, name, pts}
-let obGK     = [];  // {id, name, pts}
-let isDark   = localStorage.getItem('nr-theme') !== 'light';
-let activeMode = 'rechner';
+let subjects = {};
+let currentSubject = null;
+let isDark = localStorage.getItem('nr-theme') === 'dark';
 
 // ─── CALC ─────────────────────────────────────────────────────────────────────
-function calcAvg(ents) {
+function calcAvg(entries) {
   let sum = 0, tw = 0, cnt = 0;
-  for (const e of ents) {
+  for (const e of entries) {
     const g = G[e.grade];
     const w = parseFloat(e.weight);
     if (g != null && !isNaN(w) && w > 0) { sum += g * w; tw += w; cnt++; }
@@ -354,55 +295,48 @@ function calcAvg(ents) {
   return tw > 0 ? { avg: sum / tw, tw, cnt } : null;
 }
 
-function calcObAvg() {
-  let sum = 0, tw = 0, cnt = 0;
-  for (const e of obLK) {
-    const p = parseFloat(e.pts);
-    if (!isNaN(p) && p >= 0 && p <= 15) { sum += p * 2; tw += 2; cnt++; }
+function calcOverall() {
+  let averages = [];
+  for (const [subj, entries] of Object.entries(subjects)) {
+    const r = calcAvg(entries);
+    if (r) averages.push(r.avg);
   }
-  for (const e of obGK) {
-    const p = parseFloat(e.pts);
-    if (!isNaN(p) && p >= 0 && p <= 15) { sum += p * 1; tw += 1; cnt++; }
-  }
-  return tw > 0 ? { avg: sum / tw, tw, cnt } : null;
-}
-
-function ptsToNote(p) {
-  if (p >= 13) return { n: '1', label: 'sehr gut',    cls: 'rc-green'  };
-  if (p >= 10) return { n: '2', label: 'gut',          cls: 'rc-blue'   };
-  if (p >= 7)  return { n: '3', label: 'befriedigend', cls: 'rc-yellow' };
-  if (p >= 4)  return { n: '4', label: 'ausreichend',  cls: 'rc-orange' };
-  if (p >= 1)  return { n: '5', label: 'mangelhaft',   cls: 'rc-red'    };
-  return              { n: '6', label: 'ungenügend',   cls: 'rc-red'    };
-}
-
-function gradeForTarget(needed) {
-  // highest (worst) grade value still ≤ needed
-  let best = null;
-  for (const [k, v] of Object.entries(G)) {
-    if (v <= needed + 0.001 && (best === null || v > G[best])) best = k;
-  }
-  return best;
+  if (averages.length === 0) return null;
+  const avg = averages.reduce((a, b) => a + b, 0) / averages.length;
+  return { avg, cnt: averages.length };
 }
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 function save() {
-  localStorage.setItem('nr-entries', JSON.stringify(entries));
-  localStorage.setItem('nr-lk', JSON.stringify(obLK));
-  localStorage.setItem('nr-gk', JSON.stringify(obGK));
+  localStorage.setItem('nr-subjects', JSON.stringify(subjects));
+  localStorage.setItem('nr-current', currentSubject);
 }
 
 function load() {
   try {
-    const e = JSON.parse(localStorage.getItem('nr-entries') || '[]');
-    const lk = JSON.parse(localStorage.getItem('nr-lk') || '[]');
-    const gk = JSON.parse(localStorage.getItem('nr-gk') || '[]');
-    entries = Array.isArray(e)  ? e  : [];
-    obLK    = Array.isArray(lk) ? lk : [];
-    obGK    = Array.isArray(gk) ? gk : [];
-    const ids = [...entries, ...obLK, ...obGK].map(x => x.id || 0);
+    const s = JSON.parse(localStorage.getItem('nr-subjects') || '{}');
+    subjects = typeof s === 'object' && !Array.isArray(s) ? s : {};
+    
+    // no default subject — start empty
+    
+    for (const key in subjects) {
+      if (!Array.isArray(subjects[key])) subjects[key] = [];
+    }
+    
+    const ids = [];
+    for (const entries of Object.values(subjects)) {
+      ids.push(...entries.map(x => x.id || 0));
+    }
     nid = ids.length ? Math.max(...ids) + 1 : 1;
-  } catch { entries = []; obLK = []; obGK = []; }
+    
+    currentSubject = localStorage.getItem('nr-current');
+    if (!currentSubject || !subjects[currentSubject]) {
+      currentSubject = Object.keys(subjects)[0];
+    }
+  } catch {
+    subjects = { 'Fach': [] };
+    currentSubject = 'Fach';
+  }
 }
 
 // ─── GRADE SELECT HTML ────────────────────────────────────────────────────────
@@ -411,14 +345,33 @@ function gradeSelect(val, id) {
   return `<select class="inp inp-grade" data-id="${id}" onchange="upd(${id},'grade',this.value)">${opts}</select>`;
 }
 
-// ─── RENDER: RECHNER ──────────────────────────────────────────────────────────
-function renderRechner() {
+// ─── RENDER ────────────────────────────────────────────────────────────────────
+function renderTabs() {
+  const div = document.getElementById('subjectTabs');
+  const keys = Object.keys(subjects);
+  if (keys.length === 0) {
+    div.innerHTML = `<button class="subject-tab create-hint" onclick="openAddSubject()"><i data-lucide="plus" style="width:13px;height:13px"></i> Fach erstellen</button>`;
+    lucide.createIcons();
+    return;
+  }
+  const tabs = keys.map(subj =>
+    `<button class="subject-tab${subj === currentSubject ? ' active' : ''}" onclick="switchSubject(this.dataset.s)" data-s="${esc(subj)}">${esc(subj)}<span class="tab-del" data-del="${esc(subj)}" onclick="event.stopPropagation();removeSub(this.dataset.del)" title="Fach löschen">×</span></button>`
+  ).join('');
+  div.innerHTML = tabs + `<button class="subject-tab add-subject" onclick="openAddSubject()" title="Neues Fach hinzufügen"><i data-lucide="plus" style="width:14px;height:14px"></i></button>`;
+  lucide.createIcons();
+}
+
+function renderGrades() {
   const tb = document.getElementById('gradeBody');
+  const entries = subjects[currentSubject] || [];
+  document.getElementById('subjectTitle').textContent = currentSubject || '–';
+  
   if (!entries.length) {
-    tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="es-title">Noch keine Einträge</div><p>Wähle einen Preset oben oder füge manuell eine Note hinzu.</p></div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="es-title">Noch keine Einträge</div><p>Wähle einen Preset unten oder füge manuell eine Note hinzu.</p></div></td></tr>`;
     document.getElementById('resultWrap').innerHTML = '';
     return;
   }
+  
   tb.innerHTML = entries.map(e => `
     <tr>
       <td><input class="inp inp-name" type="text" value="${esc(e.name)}" placeholder="Fach / Bezeichnung" oninput="upd(${e.id},'name',this.value)"></td>
@@ -432,8 +385,9 @@ function renderRechner() {
 
 function renderResult() {
   const wrap = document.getElementById('resultWrap');
+  const entries = subjects[currentSubject] || [];
   const r = calcAvg(entries);
-  if (!r) { wrap.innerHTML = ''; return; }
+  if (!r) { wrap.innerHTML = ''; renderOverall(); return; }
   const info = gradeInfo(r.avg);
   wrap.innerHTML = `
     <div class="result-main">
@@ -442,100 +396,21 @@ function renderResult() {
       <div class="result-sub">${r.cnt} Eintrag${r.cnt!==1?'e':''} &middot; Gesamtgewicht ${r.tw % 1 === 0 ? r.tw : fmtDE(r.tw)}</div>
       <div class="result-tag ${info.cls}">${info.label}</div>
     </div>`;
+  renderOverall();
 }
 
-// ─── RENDER: OBERSTUFE ────────────────────────────────────────────────────────
-function renderObRow(e, type) {
-  return `<tr>
-    <td><input class="inp inp-name" type="text" value="${esc(e.name)}" placeholder="Fach" oninput="updOb(${e.id},'${type}','name',this.value)"></td>
-    <td><input class="inp inp-pts" type="number" value="${e.pts}" min="0" max="15" step="1" onchange="updOb(${e.id},'${type}','pts',this.value)" oninput="updOb(${e.id},'${type}','pts',this.value)"></td>
-    <td><button class="del-btn" onclick="removeOb(${e.id},'${type}')" title="Löschen"><i data-lucide="x" style="width:11px;height:11px"></i></button></td>
-  </tr>`;
-}
-
-function renderOberstufe() {
-  const lb = document.getElementById('lkBody');
-  const gb = document.getElementById('gkBody');
-  lb.innerHTML = obLK.length ? obLK.map(e => renderObRow(e,'lk')).join('') :
-    `<tr><td colspan="3"><div class="empty-state" style="padding:20px 16px"><div class="es-title">Keine Leistungskurse</div></div></td></tr>`;
-  gb.innerHTML = obGK.length ? obGK.map(e => renderObRow(e,'gk')).join('') :
-    `<tr><td colspan="3"><div class="empty-state" style="padding:20px 16px"><div class="es-title">Keine Grundkurse</div></div></td></tr>`;
-  lucide.createIcons();
-  renderObResult();
-}
-
-function renderObResult() {
-  const wrap = document.getElementById('obResultWrap');
-  const r = calcObAvg();
-  if (!r) { wrap.innerHTML = ''; return; }
-  const ni = ptsToNote(r.avg);
-  wrap.innerHTML = `
-    <div class="result-main">
-      <div class="result-label">Gewichteter Schnitt (Punkte)</div>
-      <div class="result-val">${fmtDE(r.avg)}</div>
-      <div class="result-sub">${r.cnt} Kurs${r.cnt!==1?'e':''} &middot; entspricht ca. Note ${ni.n}</div>
-      <div class="result-tag ${ni.cls}">${ni.label}</div>
+function renderOverall() {
+  const div = document.getElementById('overallResult');
+  const r = calcOverall();
+  if (!r) { div.innerHTML = ''; return; }
+  const info = gradeInfo(r.avg);
+  div.innerHTML = `
+    <div class="overall-mini">
+      <span class="overall-mini-lbl">Gesamtschnitt</span>
+      <span class="overall-mini-val">${fmtDE(r.avg)}</span>
+      <span class="result-tag ${info.cls}" style="margin:0;padding:3px 10px;font-size:11px">${info.label}</span>
+      <span class="overall-mini-sub">${r.cnt} ${r.cnt !== 1 ? 'Fächer' : 'Fach'}</span>
     </div>`;
-}
-
-// ─── RENDER: ZIEL ─────────────────────────────────────────────────────────────
-function syncZielFromRechner() {
-  const r = calcAvg(entries);
-  const src = document.getElementById('zielSrc');
-  if (r) {
-    src.textContent = `Aus dem Notenrechner: Schnitt ${fmtDE(r.avg)} · Gesamtgewicht ${r.tw % 1 === 0 ? r.tw : fmtDE(r.tw)} · ${r.cnt} Eintrag${r.cnt!==1?'e':''}`;
-    document.getElementById('zielCurAvg').value = fmtDE(r.avg);
-    document.getElementById('zielTotalW').value  = r.tw;
-  } else {
-    src.textContent = 'Kein Schnitt berechnet — trage zuerst Noten im Notenrechner ein.';
-  }
-  calcZiel();
-}
-
-function calcZiel() {
-  const curAvg    = parseDE(document.getElementById('zielCurAvg').value);
-  const tw        = parseFloat(document.getElementById('zielTotalW').value);
-  const target    = parseDE(document.getElementById('zielTarget').value);
-  const nextW     = parseFloat(document.getElementById('zielNextW').value);
-  const el        = document.getElementById('zielResult');
-
-  if (isNaN(curAvg) || isNaN(tw) || isNaN(target) || isNaN(nextW) || tw < 0 || nextW <= 0) {
-    el.innerHTML = '';
-    return;
-  }
-
-  // needed = (target*(tw+nw) - curAvg*tw) / nw
-  const needed = (target * (tw + nextW) - curAvg * tw) / nextW;
-
-  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if (needed > 6.0) {
-    el.innerHTML = `<div class="ziel-result"><div class="zr-lbl">Ergebnis</div><div class="zr-val" style="color:${dark?'#4ade80':'#15803d'}">Bereits erreicht</div><div class="zr-sub">Jede Note reicht, um den Zielschnitt zu halten.</div></div>`;
-    return;
-  }
-  if (needed < 0.75) {
-    el.innerHTML = `<div class="ziel-result"><div class="zr-lbl">Ergebnis</div><div class="zr-val" style="color:${dark?'#f87171':'#b91c1c'}">Nicht erreichbar</div><div class="zr-sub">Auch eine 1+ reicht nicht aus.</div></div>`;
-    return;
-  }
-
-  const gk = gradeForTarget(needed);
-  if (!gk) { el.innerHTML = ''; return; }
-  const info = gradeInfo(G[gk]);
-  el.innerHTML = `<div class="ziel-result">
-    <div class="zr-lbl">Benötigte Note (mindestens)</div>
-    <div class="zr-val">${gk} <span style="font-size:14px;font-weight:500;opacity:.65">≈ ${fmtDE(needed)}</span></div>
-    <div class="zr-sub">${info.label} &middot; Gewicht ${nextW}×</div>
-  </div>`;
-  // color the grade
-  const vEl = el.querySelector('.zr-val');
-  const colors = {
-    'rc-green': '#15803d', 'rc-blue': '#1d4ed8',
-    'rc-yellow': '#a16207', 'rc-orange': '#c2410c', 'rc-red': '#b91c1c'
-  };
-  const darkColors = {
-    'rc-green': '#4ade80', 'rc-blue': '#93c5fd',
-    'rc-yellow': '#fde047', 'rc-orange': '#fb923c', 'rc-red': '#f87171'
-  };
-  vEl.style.color = (dark ? darkColors : colors)[info.cls] || '';
 }
 
 // ─── ENTRY MUTATIONS ──────────────────────────────────────────────────────────
@@ -544,70 +419,162 @@ function newEntry(name, grade, weight) {
 }
 
 function addEntry(name, grade, weight) {
-  entries.push(newEntry(name, grade, weight));
-  save(); renderRechner();
+  if (!currentSubject) return;
+  subjects[currentSubject].push(newEntry(name, grade, weight));
+  save(); renderGrades();
 }
 
 function addPreset(name, weight) {
-  entries.push(newEntry(name, '2', weight));
-  save(); renderRechner();
+  addEntry(name, '2', weight);
 }
 
 function removeEntry(id) {
-  entries = entries.filter(e => e.id !== id);
-  save(); renderRechner();
+  if (!currentSubject) return;
+  subjects[currentSubject] = subjects[currentSubject].filter(e => e.id !== id);
+  save(); renderGrades();
 }
 
 function upd(id, field, val) {
-  const e = entries.find(e => e.id === id);
+  if (!currentSubject) return;
+  const e = subjects[currentSubject].find(e => e.id === id);
   if (!e) return;
   if (field === 'weight') { const w = parseFloat(val); if (!isNaN(w) && w > 0) e.weight = w; }
   else e[field] = val;
   save(); renderResult();
-  if (activeMode === 'ziel') syncZielFromRechner();
 }
 
-// Oberstufe mutations
-function addObEntry(type) {
-  const e = { id: nid++, name: '', pts: 10 };
-  if (type === 'lk') obLK.push(e); else obGK.push(e);
-  save(); renderOberstufe();
+// ─── SUBJECT MUTATIONS ─────────────────────────────────────────────────────────
+function openAddSubject() {
+  document.getElementById('addSubjectModal').classList.add('active');
+  document.getElementById('subjectNameInput').value = '';
+  document.getElementById('subjectNameInput').focus();
 }
 
-function removeOb(id, type) {
-  if (type === 'lk') obLK = obLK.filter(e => e.id !== id);
-  else               obGK = obGK.filter(e => e.id !== id);
-  save(); renderOberstufe();
+function closeAddSubject() {
+  document.getElementById('addSubjectModal').classList.remove('active');
 }
 
-function updOb(id, type, field, val) {
-  const arr = type === 'lk' ? obLK : obGK;
-  const e = arr.find(e => e.id === id);
-  if (!e) return;
-  if (field === 'pts') { const p = parseFloat(val); if (!isNaN(p)) e.pts = Math.max(0, Math.min(15, p)); }
-  else e[field] = val;
-  save(); renderObResult();
+function addSubject() {
+  const name = document.getElementById('subjectNameInput').value.trim();
+  if (!name) return;
+  if (subjects[name]) { alert('Fach existiert bereits!'); return; }
+  subjects[name] = [];
+  save();
+  switchSubject(name);
+  closeAddSubject();
 }
 
-// ─── CLEAR / EXPORT / IMPORT ──────────────────────────────────────────────────
-function clearAll() {
-  if (!entries.length) return;
-  if (!confirm('Alle Einträge löschen?')) return;
-  entries = []; save(); renderRechner();
-  if (activeMode === 'ziel') syncZielFromRechner();
+function switchSubject(name) {
+  if (!subjects[name]) return;
+  currentSubject = name;
+  save();
+  document.getElementById('subjectTitle').textContent = name;
+  renderTabs();
+  renderGrades();
 }
 
-function exportJSON() {
-  const data = { entries, obLK, obGK, exported: new Date().toISOString() };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+function removeSub(name) {
+  const target = name !== undefined ? name : currentSubject;
+  if (!target || !subjects[target]) return;
+  if (!confirm(`Fach "${target}" wirklich löschen?`)) return;
+  delete subjects[target];
+  if (currentSubject === target) currentSubject = Object.keys(subjects)[0] || null;
+  save();
+  renderTabs();
+  if (currentSubject) switchSubject(currentSubject);
+  else { renderGrades(); renderOverall(); }
+}
+
+// ─── EXPORT / IMPORT ──────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!currentSubject || !subjects[currentSubject].length) { alert('Keine Einträge zum Exportieren.'); return; }
+  
+  const entries = subjects[currentSubject];
+  const headers = ['Bezeichnung', 'Note', 'Gewicht'];
+  const rows = entries.map(e => [
+    `"${e.name.replace(/"/g, '""')}"`,
+    e.grade,
+    e.weight
+  ]);
+  
+  const r = calcAvg(entries);
+  if (r) {
+    rows.push(['', '', '']);
+    rows.push(['Schnitt', fmtDE(r.avg).replace('.', ','), '']);
+  }
+  
+  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'noten-' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = `noten-${currentSubject}-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
-function importJSON() {
+function exportPDF() {
+  if (!currentSubject || !subjects[currentSubject].length) { alert('Keine Einträge zum Exportieren.'); return; }
+  
+  const entries = subjects[currentSubject];
+  const r = calcAvg(entries);
+  const info = r ? gradeInfo(r.avg) : null;
+  
+  const date = new Date().toLocaleDateString('de-DE');
+  const html = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
+      <h1 style="margin: 0 0 5px 0; font-size: 24px;">${esc(currentSubject)}</h1>
+      <p style="margin: 0 0 20px 0; color: #666; font-size: 12px;">Datum: ${date}</p>
+      
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+          <tr style="background: #f0f4f9; border-bottom: 2px solid #e2e8f0;">
+            <th style="padding: 8px 12px; text-align: left; font-weight: bold; font-size: 12px;">Bezeichnung</th>
+            <th style="padding: 8px 12px; text-align: center; font-weight: bold; font-size: 12px; width: 60px;">Note</th>
+            <th style="padding: 8px 12px; text-align: center; font-weight: bold; font-size: 12px; width: 60px;">Gewicht</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${entries.map(e => `
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 8px 12px; font-size: 12px;">${e.name}</td>
+              <td style="padding: 8px 12px; text-align: center; font-size: 12px;">${e.grade}</td>
+              <td style="padding: 8px 12px; text-align: center; font-size: 12px;">${e.weight}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      
+      ${r ? `
+        <div style="background: #f0f4f9; border-left: 4px solid #3b82f6; padding: 12px; margin-top: 20px; border-radius: 4px;">
+          <p style="margin: 0; font-size: 11px; color: #666; font-weight: bold;">GEWICHTETER SCHNITT</p>
+          <p style="margin: 8px 0 0 0; font-size: 28px; font-weight: bold; color: #0f172a;">${fmtDE(r.avg)}</p>
+          <p style="margin: 4px 0 0 0; font-size: 11px; color: #666;">${r.cnt} Eintrag${r.cnt!==1?'e':''} • Gesamtgewicht ${r.tw}</p>
+          <p style="margin: 8px 0 0 0; display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; background: ${
+            info.cls === 'rc-green' ? '#dcfce7; color: #15803d' :
+            info.cls === 'rc-blue' ? '#dbeafe; color: #1d4ed8' :
+            info.cls === 'rc-yellow' ? '#fef9c3; color: #a16207' :
+            info.cls === 'rc-orange' ? '#ffedd5; color: #c2410c' :
+            '#fee2e2; color: #b91c1c'
+          };">${info.label}</p>
+        </div>
+      ` : ''}
+      
+      <p style="margin-top: 30px; font-size: 10px; color: #999; border-top: 1px solid #e2e8f0; padding-top: 10px;">Exportiert von Notenrechner • IFB</p>
+    </div>
+  `;
+  
+  const opt = {
+    margin: 10,
+    filename: `noten-${currentSubject}-${new Date().toISOString().slice(0,10)}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  html2pdf().set(opt).from(html).save();
+}
+
+function importCSV() {
   document.getElementById('importFile').click();
 }
 
@@ -617,15 +584,27 @@ function handleImport(ev) {
   const reader = new FileReader();
   reader.onload = e => {
     try {
-      const data = JSON.parse(e.target.result);
-      if (data.entries) entries = data.entries;
-      if (data.obLK)    obLK    = data.obLK;
-      if (data.obGK)    obGK    = data.obGK;
-      const ids = [...entries, ...obLK, ...obGK].map(x => x.id || 0);
-      nid = ids.length ? Math.max(...ids) + 1 : 1;
-      save(); renderRechner(); renderOberstufe();
-      if (activeMode === 'ziel') syncZielFromRechner();
-    } catch { alert('Ungültige JSON-Datei.'); }
+      const lines = e.target.result.split('\n').filter(l => l.trim());
+      if (lines.length < 2) throw new Error('Invalid CSV');
+      
+      const entries = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(',');
+        if (parts.length < 3) continue;
+        
+        const name = parts[0].replace(/^"|"$/g, '').replace('""', '"');
+        const grade = parts[1].trim();
+        const weight = parseFloat(parts[2]);
+        
+        if (name && grade && !isNaN(weight) && weight > 0) {
+          entries.push(newEntry(name, grade, weight));
+        }
+      }
+      
+      if (!currentSubject) return;
+      subjects[currentSubject] = entries;
+      save(); renderGrades();
+    } catch { alert('Ungültige CSV-Datei.'); }
   };
   reader.readAsText(file);
   ev.target.value = '';
@@ -643,25 +622,25 @@ document.getElementById('themeBtn').addEventListener('click', () => {
   isDark = !isDark;
   localStorage.setItem('nr-theme', isDark ? 'dark' : 'light');
   applyTheme();
-  if (activeMode === 'ziel') calcZiel();
 });
 
-// ─── MODE TABS ────────────────────────────────────────────────────────────────
-document.querySelector('.mode-tabs').addEventListener('click', e => {
-  const btn = e.target.closest('[data-mode]');
-  if (!btn) return;
-  activeMode = btn.dataset.mode;
-  document.querySelectorAll('.mt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === activeMode));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + activeMode).classList.add('active');
-  if (activeMode === 'ziel') syncZielFromRechner();
+document.getElementById('subjectNameInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') addSubject();
+});
+
+document.getElementById('addSubjectModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeAddSubject();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAddSubject();
 });
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 load();
 applyTheme();
-renderRechner();
-renderOberstufe();
+renderTabs();
+renderGrades();
 lucide.createIcons();
 </script>
 </body>
