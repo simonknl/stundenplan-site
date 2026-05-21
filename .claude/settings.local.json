@@ -8,7 +8,8 @@
       "Bash(sudo systemctl reload nginx)",
       "Bash(sudo sed -i 's|    location = /notenrechner {|    location = /klausurenplan {\\\\n        try_files /klausurenplan.html =404;\\\\n    }\\\\n\\\\n    location = /notenrechner {|' /etc/nginx/sites-available/ifb.lol)",
       "Bash(sudo sed -i 's|    location = /notenrechner {\\\\n        try_files /notenrechner.html =404;\\\\n    }\\\\n|    location = /notenrechner {\\\\n        try_files /notenrechner.html =404;\\\\n    }\\\\n\\\\n    location = /dashboard {\\\\n        try_files /dashboard.html =404;\\\\n    }\\\\n|' /etc/nginx/sites-available/ifb.lol)",
-      "Bash(sudo python3 *)"
+      "Bash(sudo python3 *)",
+      "Bash(git config *)"
     ]
   }
 }
