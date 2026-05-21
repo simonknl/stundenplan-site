@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stundenplan · ifb.lol</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --bg:#f0f4f9;--surface:#fff;--surface-2:#f8fafc;--border:#e2e8f0;--border-s:#f0f4f8;
+  --text:#0f172a;--text-2:#334155;--muted:#64748b;--subtle:#94a3b8;--blue:#3b82f6;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+  --r:10px;--r-lg:14px;
+}
+[data-theme="dark"] {
+  --bg:#0d1117;--surface:#161b27;--surface-2:#1c2333;--border:#2d3748;--border-s:#1e2a3a;
+  --text:#e2e8f0;--text-2:#a0aec0;--muted:#718096;--subtle:#4a5568;--blue:#63b3ed;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 4px 12px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-size:14px;line-height:1.5;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.page{max-width:1200px;margin:0 auto;padding:16px}
+@media(min-width:768px){.page{padding:24px 32px}}
+
+/* header */
+.header{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.header-title{flex:1;min-width:160px}
+.header-title h1{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.header-title .sub{font-size:12px;color:var(--muted);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.clock-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:8px 14px;text-align:right;box-shadow:var(--shadow-sm)}
+.clock-time{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.clock-date{font-size:11px;color:var(--muted)}
+.icon-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:background .15s,color .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+.back-link{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0 12px;height:36px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;transition:background .15s,color .15s;white-space:nowrap}
+.back-link:hover{background:var(--surface-2);color:var(--text);text-decoration:none}
+
+/* class tabs */
+.class-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:4px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.ct-btn{flex:1;min-width:60px;padding:7px 10px;border:none;border-radius:var(--r);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s;font-family:inherit;white-space:nowrap}
+.ct-btn:hover{background:var(--surface-2);color:var(--text)}
+.ct-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(59,130,246,.3)}
+[data-theme="dark"] .ct-btn.active{box-shadow:0 2px 6px rgba(99,179,237,.2)}
+
+/* lesson banner */
+.lesson-banner{border-radius:var(--r-lg);padding:14px 18px;color:#fff;display:flex;align-items:center;gap:14px;margin-bottom:16px;overflow:hidden}
+.lesson-banner.active{background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 4px 20px rgba(99,102,241,.3)}
+.lesson-banner.free{background:linear-gradient(135deg,#64748b,#475569);box-shadow:0 4px 16px rgba(71,85,105,.2)}
+.lesson-banner.break-time{background:linear-gradient(135deg,#0891b2,#0284c7);box-shadow:0 4px 16px rgba(8,145,178,.2)}
+.lesson-banner.done{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 4px 16px rgba(22,163,74,.2)}
+.lesson-banner.hidden{display:none}
+.lb-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0;animation:lpulse 1.8s ease-in-out infinite}
+@keyframes lpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+.lb-info{flex:1;min-width:0}
+.lb-eyebrow{font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-bottom:2px}
+.lb-subject{font-size:17px;font-weight:800}
+.lb-detail{font-size:11px;opacity:.7;margin-top:1px}
+.lb-prog-track{height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin-top:8px;overflow:hidden}
+.lb-prog-bar{height:100%;background:rgba(255,255,255,.75);border-radius:2px;transition:width .5s ease}
+.lb-right{text-align:right;flex-shrink:0}
+.lb-count{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.lb-count-lbl{font-size:10px;opacity:.65;text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+
+/* layout */
+.layout{display:flex;flex-direction:column;gap:16px}
+@media(min-width:960px){.layout{flex-direction:row;align-items:flex-start}.main-col{flex:1;min-width:0}.side-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}}
+.side-mob{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+@media(min-width:960px){.side-mob{display:none}}
+.side-col{display:none}
+@media(min-width:960px){.side-col{display:flex}}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.card-head{padding:13px 18px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-head h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.card-head .chi{color:var(--subtle)}
+
+/* timetable */
+.tt-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 16px 14px}
+.tt-grid{display:grid;grid-template-columns:50px repeat(5,1fr);gap:3px;min-width:460px}
+.tt-hdr{padding:6px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em}
+.tt-hdr.td{color:var(--blue)}
+.tt-hdr-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);margin:3px auto 0}
+.tt-time{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;font-size:10px;font-variant-numeric:tabular-nums;color:var(--subtle);text-align:center;line-height:1.3}
+.tt-pn{font-size:9px;font-weight:700;color:var(--subtle);letter-spacing:.04em;margin-bottom:1px}
+.tt-brk{grid-column:1/-1;display:flex;align-items:center;height:9px}
+.tt-brk-line{flex:1;height:1px;background:var(--border-s)}
+.tt-cell{border-radius:var(--r);padding:6px 8px;min-height:48px;display:flex;flex-direction:column;justify-content:center;position:relative;transition:transform .12s,box-shadow .12s;cursor:default}
+.tt-cell.emp{background:transparent}
+.tt-cell:not(.emp){background:var(--sc-bg);border:1px solid var(--sc-brd);cursor:pointer}
+.tt-cell:not(.emp):hover{transform:translateY(-1px);box-shadow:var(--shadow);z-index:1}
+.tt-cell.td:not(.emp){filter:brightness(1.05)}
+[data-theme="dark"] .tt-cell.td:not(.emp){filter:brightness(1.12)}
+.tt-cell.now{box-shadow:0 0 0 2px var(--sc)!important;animation:aglow 2s ease-in-out infinite alternate}
+@keyframes aglow{from{box-shadow:0 0 0 2px var(--sc)}to{box-shadow:0 0 0 2px var(--sc),0 0 10px rgba(99,102,241,.25)}}
+.tt-cell .cs{font-size:12px;font-weight:700;color:var(--sc-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-cell .ct{font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-cell .cr{position:absolute;top:4px;right:5px;font-size:9px;font-weight:600;color:var(--subtle);background:var(--surface);border-radius:4px;padding:1px 4px;border:1px solid var(--border)}
+.gf{border-radius:var(--r) var(--r) 3px 3px}
+.gm{border-radius:3px;border-top:1px solid transparent!important;margin-top:-1px}
+.gl{border-radius:3px 3px var(--r) var(--r);border-top:1px solid transparent!important;margin-top:-1px}
+
+/* subject colors */
+.sc-java   {--sc:#f59e0b;--sc-bg:rgba(245,158,11,.10);--sc-brd:rgba(245,158,11,.22);--sc-text:#92400e}
+.sc-linux  {--sc:#10b981;--sc-bg:rgba(16,185,129,.10);--sc-brd:rgba(16,185,129,.22);--sc-text:#065f46}
+.sc-acc    {--sc:#8b5cf6;--sc-bg:rgba(139,92,246,.10);--sc-brd:rgba(139,92,246,.22);--sc-text:#4c1d95}
+.sc-bwl    {--sc:#3b82f6;--sc-bg:rgba(59,130,246,.10);--sc-brd:rgba(59,130,246,.22);--sc-text:#1e3a8a}
+.sc-rewe   {--sc:#ef4444;--sc-bg:rgba(239,68,68,.10);--sc-brd:rgba(239,68,68,.22);--sc-text:#7f1d1d}
+.sc-orga   {--sc:#14b8a6;--sc-bg:rgba(20,184,166,.10);--sc-brd:rgba(20,184,166,.22);--sc-text:#134e4a}
+.sc-e      {--sc:#f97316;--sc-bg:rgba(249,115,22,.10);--sc-brd:rgba(249,115,22,.22);--sc-text:#7c2d12}
+.sc-ma     {--sc:#ec4899;--sc-bg:rgba(236,72,153,.10);--sc-brd:rgba(236,72,153,.22);--sc-text:#831843}
+.sc-dv     {--sc:#6366f1;--sc-bg:rgba(99,102,241,.10);--sc-brd:rgba(99,102,241,.22);--sc-text:#312e81}
+.sc-web    {--sc:#06b6d4;--sc-bg:rgba(6,182,212,.10);--sc-brd:rgba(6,182,212,.22);--sc-text:#164e63}
+.sc-pug    {--sc:#84cc16;--sc-bg:rgba(132,204,22,.10);--sc-brd:rgba(132,204,22,.22);--sc-text:#365314}
+.sc-py     {--sc:#22c55e;--sc-bg:rgba(34,197,94,.10);--sc-brd:rgba(34,197,94,.22);--sc-text:#14532d}
+.sc-exc    {--sc:#65a30d;--sc-bg:rgba(101,163,13,.10);--sc-brd:rgba(101,163,13,.22);--sc-text:#365314}
+.sc-ki     {--sc:#a855f7;--sc-bg:rgba(168,85,247,.10);--sc-brd:rgba(168,85,247,.22);--sc-text:#581c87}
+.sc-wima   {--sc:#f43f5e;--sc-bg:rgba(244,63,94,.10);--sc-brd:rgba(244,63,94,.22);--sc-text:#881337}
+.sc-inv    {--sc:#0ea5e9;--sc-bg:rgba(14,165,233,.10);--sc-brd:rgba(14,165,233,.22);--sc-text:#0c4a6e}
+.sc-voc    {--sc:#fb923c;--sc-bg:rgba(251,146,60,.10);--sc-brd:rgba(251,146,60,.22);--sc-text:#7c2d12}
+.sc-sql    {--sc:#0891b2;--sc-bg:rgba(8,145,178,.10);--sc-brd:rgba(8,145,178,.22);--sc-text:#164e63}
+.sc-geo    {--sc:#78716c;--sc-bg:rgba(120,113,108,.10);--sc-brd:rgba(120,113,108,.22);--sc-text:#44403c}
+.sc-phy    {--sc:#7c3aed;--sc-bg:rgba(124,58,237,.10);--sc-brd:rgba(124,58,237,.22);--sc-text:#4c1d95}
+.sc-sowe   {--sc:#84cc16;--sc-bg:rgba(132,204,22,.10);--sc-brd:rgba(132,204,22,.22);--sc-text:#365314}
+.sc-zzz    {--sc:#94a3b8;--sc-bg:rgba(148,163,184,.08);--sc-brd:rgba(148,163,184,.18);--sc-text:#475569}
+[data-theme="dark"] .sc-java  {--sc-bg:rgba(245,158,11,.14);--sc-brd:rgba(245,158,11,.25);--sc-text:#fbbf24}
+[data-theme="dark"] .sc-linux {--sc-bg:rgba(16,185,129,.14);--sc-brd:rgba(16,185,129,.25);--sc-text:#34d399}
+[data-theme="dark"] .sc-acc   {--sc-bg:rgba(139,92,246,.14);--sc-brd:rgba(139,92,246,.25);--sc-text:#c4b5fd}
+[data-theme="dark"] .sc-bwl   {--sc-bg:rgba(59,130,246,.14);--sc-brd:rgba(59,130,246,.25);--sc-text:#93c5fd}
+[data-theme="dark"] .sc-rewe  {--sc-bg:rgba(239,68,68,.14);--sc-brd:rgba(239,68,68,.25);--sc-text:#fca5a5}
+[data-theme="dark"] .sc-orga  {--sc-bg:rgba(20,184,166,.14);--sc-brd:rgba(20,184,166,.25);--sc-text:#5eead4}
+[data-theme="dark"] .sc-e     {--sc-bg:rgba(249,115,22,.14);--sc-brd:rgba(249,115,22,.25);--sc-text:#fdba74}
+[data-theme="dark"] .sc-ma    {--sc-bg:rgba(236,72,153,.14);--sc-brd:rgba(236,72,153,.25);--sc-text:#f9a8d4}
+[data-theme="dark"] .sc-dv    {--sc-bg:rgba(99,102,241,.14);--sc-brd:rgba(99,102,241,.25);--sc-text:#a5b4fc}
+[data-theme="dark"] .sc-web   {--sc-bg:rgba(6,182,212,.14);--sc-brd:rgba(6,182,212,.25);--sc-text:#67e8f9}
+[data-theme="dark"] .sc-pug   {--sc-bg:rgba(132,204,22,.14);--sc-brd:rgba(132,204,22,.25);--sc-text:#bef264}
+[data-theme="dark"] .sc-py    {--sc-bg:rgba(34,197,94,.14);--sc-brd:rgba(34,197,94,.25);--sc-text:#86efac}
+[data-theme="dark"] .sc-exc   {--sc-bg:rgba(101,163,13,.14);--sc-brd:rgba(101,163,13,.25);--sc-text:#bef264}
+[data-theme="dark"] .sc-ki    {--sc-bg:rgba(168,85,247,.14);--sc-brd:rgba(168,85,247,.25);--sc-text:#d8b4fe}
+[data-theme="dark"] .sc-wima  {--sc-bg:rgba(244,63,94,.14);--sc-brd:rgba(244,63,94,.25);--sc-text:#fda4af}
+[data-theme="dark"] .sc-inv   {--sc-bg:rgba(14,165,233,.14);--sc-brd:rgba(14,165,233,.25);--sc-text:#7dd3fc}
+[data-theme="dark"] .sc-voc   {--sc-bg:rgba(251,146,60,.14);--sc-brd:rgba(251,146,60,.25);--sc-text:#fdba74}
+[data-theme="dark"] .sc-sql   {--sc-bg:rgba(8,145,178,.14);--sc-brd:rgba(8,145,178,.25);--sc-text:#67e8f9}
+[data-theme="dark"] .sc-geo   {--sc-bg:rgba(120,113,108,.14);--sc-brd:rgba(120,113,108,.25);--sc-text:#d6d3d1}
+[data-theme="dark"] .sc-phy   {--sc-bg:rgba(124,58,237,.14);--sc-brd:rgba(124,58,237,.25);--sc-text:#c4b5fd}
+[data-theme="dark"] .sc-sowe  {--sc-bg:rgba(132,204,22,.14);--sc-brd:rgba(132,204,22,.25);--sc-text:#bef264}
+[data-theme="dark"] .sc-zzz   {--sc-bg:rgba(148,163,184,.11);--sc-brd:rgba(148,163,184,.2);--sc-text:#94a3b8}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:5px 9px;padding:0 16px 12px}
+.lg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.lg-dot{width:7px;height:7px;border-radius:50%;background:var(--sc);flex-shrink:0}
+
+/* next exam */
+.nex-body{padding:14px 18px}
+.nex-ey{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);margin-bottom:5px}
+.nex-subj{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.nex-date{font-size:12px;color:var(--muted);margin-top:2px}
+.nex-badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;margin-top:9px}
+.nb-today{background:#fee2e2;color:#dc2626}.nb-soon{background:#fef3c7;color:#d97706}
+.nb-norm{background:#eff6ff;color:#2563eb}.nb-ap{background:#f0fdf4;color:#16a34a}
+[data-theme="dark"] .nb-today{background:#450a0a;color:#f87171}
+[data-theme="dark"] .nb-soon{background:#451a03;color:#fbbf24}
+[data-theme="dark"] .nb-norm{background:#172554;color:#93c5fd}
+[data-theme="dark"] .nb-ap{background:#052e16;color:#4ade80}
+
+/* today list */
+.tod-empty{padding:14px 18px;font-size:13px;color:var(--muted);text-align:center}
+.tod-item{display:flex;align-items:center;gap:10px;padding:8px 18px;border-top:1px solid var(--border-s)}
+.tod-item:first-child{border-top:none}
+.tod-item.now{background:var(--border-s)}
+.ti-dot{width:8px;height:8px;border-radius:50%;background:var(--sc);flex-shrink:0}
+.ti-time{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);width:76px;flex-shrink:0}
+.ti-subj{font-size:13px;font-weight:600;color:var(--sc-text);flex:1}
+.ti-teach{font-size:11px;color:var(--muted)}
+.ti-now-tag{font-size:10px;font-weight:700;background:var(--blue);color:#fff;border-radius:999px;padding:1px 7px;flex-shrink:0}
+
+/* exam list */
+.ex-mhdr{padding:10px 18px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);background:var(--surface-2);border-top:1px solid var(--border)}
+.ex-mhdr:first-child{border-top:none}
+.ex-row{display:flex;align-items:center;gap:10px;padding:8px 18px;border-top:1px solid var(--border-s);transition:background .1s}
+.ex-row:hover{background:var(--surface-2)}
+.ex-row.past{opacity:.35}
+.ex-dot{width:8px;height:8px;border-radius:50%;background:var(--sc);flex-shrink:0}
+.ex-date{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);width:64px;flex-shrink:0}
+.ex-subj{flex:1;font-weight:600;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-badge{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;flex-shrink:0}
+.eb-today{background:#fee2e2;color:#dc2626}
+.eb-soon{background:#fef3c7;color:#d97706}
+.eb-fut{background:#f1f5f9;color:#64748b}
+.eb-ap{background:#eff6ff;color:#2563eb}
+.eb-zg{background:#f0fdf4;color:#16a34a}
+[data-theme="dark"] .eb-today{background:#450a0a;color:#f87171}
+[data-theme="dark"] .eb-soon{background:#451a03;color:#fbbf24}
+[data-theme="dark"] .eb-fut{background:#1e293b;color:#64748b}
+[data-theme="dark"] .eb-ap{background:#172554;color:#93c5fd}
+[data-theme="dark"] .eb-zg{background:#052e16;color:#4ade80}
+.ex-empty{padding:20px 18px;text-align:center;font-size:13px;color:var(--muted)}
+/* feat: subject highlight */
+.tt-cell.subj-hi{outline:2px solid var(--sc);outline-offset:-2px;z-index:2;filter:brightness(1.12)}
+.tt-cell.subj-dim{opacity:.28}
+/* feat: cell tooltip */
+#cellTip{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;box-shadow:var(--shadow);font-size:12px;z-index:1000;min-width:150px;max-width:230px;display:none}
+#cellTip.vis{display:block}
+.ctp-name{font-size:14px;font-weight:700;margin-bottom:6px}
+.ctp-row{color:var(--muted);margin-top:3px;font-size:11px}
+/* feat: gap indicator in today list */
+.tod-gap{display:flex;align-items:center;gap:10px;padding:6px 18px;border-top:1px solid var(--border-s);color:var(--muted);font-size:12px}
+.tod-gap-dot{width:8px;height:8px;border-radius:50%;background:var(--subtle);flex-shrink:0}
+/* feat: ferien divider in exam list */
+.ex-ferien{padding:6px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#16a34a;background:#f0fdf4;border-top:1px solid #bbf7d0}
+[data-theme="dark"] .ex-ferien{color:#4ade80;background:#052e16;border-color:#166534}
+/* quicklinks */
+.ql-item{display:flex;align-items:center;gap:11px;padding:10px 16px;border-top:1px solid var(--border-s);text-decoration:none;transition:background .12s;color:inherit}
+.ql-item:first-child{border-top:none}
+.ql-item:hover{background:var(--surface-2);text-decoration:none}
+.ql-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--sc-bg);border:1px solid var(--sc-brd);color:var(--sc-text)}
+.ql-text{flex:1;min-width:0}
+.ql-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ql-url{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ql-arrow{color:var(--subtle);flex-shrink:0}
+/* comments */
+.cm-list-empty{padding:16px 18px;font-size:13px;color:var(--muted);text-align:center}
+.cm-item{padding:10px 18px;border-top:1px solid var(--border-s);display:flex;flex-direction:column;gap:3px}
+.cm-item:first-child{border-top:none}
+.cm-meta{display:flex;align-items:center;gap:8px}
+.cm-name{font-size:12px;font-weight:700;color:var(--text)}
+.cm-ts{font-size:11px;color:var(--subtle)}
+.cm-del{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--subtle);padding:2px 4px;border-radius:4px;font-size:11px;line-height:1;display:flex;align-items:center}
+.cm-del:hover{background:var(--surface-2);color:#ef4444}
+.cm-text{font-size:13px;color:var(--text-2);white-space:pre-wrap;word-break:break-word}
+.cm-form{padding:12px 18px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.cm-row{display:flex;gap:8px;align-items:flex-end}
+.cm-input{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:160px;flex-shrink:0;transition:border-color .15s}
+.cm-input:focus{border-color:var(--blue)}
+.cm-area{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;resize:vertical;min-height:60px;flex:1;transition:border-color .15s;line-height:1.5}
+.cm-area:focus{border-color:var(--blue)}
+.cm-btn{background:var(--blue);border:none;border-radius:var(--r);padding:8px 16px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;transition:opacity .15s;flex-shrink:0}
+.cm-btn:hover{opacity:.85}
+.cm-btn:disabled{opacity:.45;cursor:not-allowed}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header">
+  <div class="header-title">
+    <h1>Stundenplan</h1>
+    <div class="sub" id="headerSub">ab 09.&thinsp;März 2026</div>
+  </div>
+  <div class="header-actions">
+    <a href="/app" class="back-link"><i data-lucide="layout-dashboard" style="width:13px;height:13px"></i> App</a>
+    <button class="icon-btn" id="themeBtn" title="Theme"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
+    <div class="clock-box">
+      <div class="clock-time" id="clockTime">--:--:--</div>
+      <div class="clock-date" id="clockDate">---</div>
+    </div>
+  </div>
+</div>
+
+<!-- class selector -->
+<div class="class-tabs" id="classTabs">
+  <button class="ct-btn active" data-cls="info1">Info 1</button>
+  <button class="ct-btn" data-cls="info2">Info 2</button>
+  <button class="ct-btn" data-cls="freko1">Freko 1</button>
+  <button class="ct-btn" data-cls="freko2">Freko 2</button>
+  <button class="ct-btn" data-cls="mr">MR</button>
+</div>
+
+<!-- lesson banner -->
+<div class="lesson-banner hidden" id="banner">
+  <div class="lb-dot"></div>
+  <div class="lb-info">
+    <div class="lb-eyebrow" id="lbEy">Aktuelle Stunde</div>
+    <div class="lb-subject" id="lbSubj">—</div>
+    <div class="lb-detail" id="lbDet">—</div>
+    <div class="lb-prog-track"><div class="lb-prog-bar" id="lbBar" style="width:0%"></div></div>
+  </div>
+  <div class="lb-right">
+    <div class="lb-count" id="lbCount">—</div>
+    <div class="lb-count-lbl" id="lbCountLbl">verbleibend</div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="main-col">
+    <div class="card">
+      <div class="card-head">
+        <i data-lucide="calendar-days" style="width:14px;height:14px" class="chi"></i>
+        <h2 id="ttTitle">Wochenplan</h2>
+        <button class="icon-btn" id="icalBtn" title="iCal exportieren" style="margin-left:auto;width:30px;height:30px">
+          <i data-lucide="download" style="width:13px;height:13px"></i>
+        </button>
+      </div>
+      <div class="tt-scroll"><div class="tt-grid" id="ttGrid"></div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <i data-lucide="book-open" style="width:14px;height:14px" class="chi"></i>
+        <h2>Klausurenplan</h2>
+      </div>
+      <div id="examList"></div>
+    </div>
+  </div>
+  <div class="side-col">
+    <div class="card"><div class="card-head"><i data-lucide="alarm-clock" style="width:14px;height:14px" class="chi"></i><h2>Nächste Klausur</h2></div><div id="nexBody"></div></div>
+    <div class="card"><div class="card-head"><i data-lucide="sun" style="width:14px;height:14px" class="chi"></i><h2 id="todayTitle">Heute</h2></div><div id="todayList"></div></div>
+    <div class="card"><div class="card-head"><i data-lucide="link" style="width:14px;height:14px" class="chi"></i><h2>Links</h2></div><div id="quicklinks"></div></div>
+  </div>
+</div>
+<div class="side-mob">
+  <div class="card"><div class="card-head"><i data-lucide="alarm-clock" style="width:14px;height:14px" class="chi"></i><h2>Nächste Klausur</h2></div><div id="nexBodyMob"></div></div>
+  <div class="card"><div class="card-head"><i data-lucide="sun" style="width:14px;height:14px" class="chi"></i><h2 id="todayTitleMob">Heute</h2></div><div id="todayListMob"></div></div>
+  <div class="card"><div class="card-head"><i data-lucide="link" style="width:14px;height:14px" class="chi"></i><h2>Links</h2></div><div id="quicklinksMob"></div></div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-head">
+    <i data-lucide="message-square" style="width:14px;height:14px" class="chi"></i>
+    <h2>Kommentare</h2>
+    <span id="cmCount" style="margin-left:auto;font-size:11px;color:var(--muted)"></span>
+  </div>
+  <div id="cmList"></div>
+  <div class="cm-form">
+    <div class="cm-row">
+      <input class="cm-input" id="cmName" type="text" placeholder="Name" maxlength="40" autocomplete="off">
+      <textarea class="cm-area" id="cmText" placeholder="Kommentar schreiben…" maxlength="500" rows="2"></textarea>
+      <button class="cm-btn" id="cmSubmit"><i data-lucide="send" style="width:13px;height:13px;vertical-align:-2px"></i> Senden</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<div id="cellTip" class="cell-tip"></div>
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const CLASSES = [
+  {id:'info1',  name:'Info 1',  room:'Raum 5'},
+  {id:'info2',  name:'Info 2',  room:'Raum 1'},
+  {id:'freko1', name:'Freko 1', room:'Raum 4'},
+  {id:'freko2', name:'Freko 2', room:'Raum 2'},
+  {id:'mr',     name:'MR',      room:'Raum 3'},
+];
+
+const PERIODS = [
+  {n:1, s:'08:00', e:'08:45', sm:480,  em:525 },
+  {n:2, s:'08:45', e:'09:30', sm:525,  em:570 },
+  {n:3, s:'09:45', e:'10:30', sm:585,  em:630 },
+  {n:4, s:'10:30', e:'11:15', sm:630,  em:675 },
+  {n:5, s:'11:30', e:'12:15', sm:690,  em:735 },
+  {n:6, s:'12:15', e:'13:00', sm:735,  em:780 },
+  {n:7, s:'13:30', e:'14:15', sm:810,  em:855 },
+  {n:8, s:'14:15', e:'15:00', sm:855,  em:900 },
+  {n:9, s:'15:15', e:'16:00', sm:915,  em:960 },
+];
+const BREAKS = [[2,570,585],[4,675,690],[6,780,810],[8,900,915]];
+const BRK = new Set(BREAKS.map(b=>b[0]));
+
+// sched[classId][dayIdx 0-4][periodIdx 0-8] = {s,t,r?}|null
+const SCHED = {
+  info1:[
+    [null,{s:'Linux',t:'Ober'},{s:'Linux',t:'Ober'},{s:'Linux',t:'Ober'},{s:'Acc',t:'Breth'},{s:'Acc',t:'Breth'},{s:'PuG',t:'Blad'},{s:'PuG',t:'Blad'},null],
+    [{s:'JAVA',t:'Zeit'},{s:'JAVA',t:'Zeit'},{s:'JAVA',t:'Zeit'},null,{s:'E',t:'Bon',r:'R4'},{s:'E',t:'Bon',r:'R4'},null,null,null],
+    [{s:'Exc',t:'Berndt'},{s:'Exc',t:'Berndt'},{s:'BWL',t:'Breth'},{s:'BWL',t:'Breth'},{s:'Rewe',t:'Breth'},{s:'Orga',t:'Breth'},{s:'Orga',t:'Breth'},{s:'Orga',t:'Breth'},null],
+    [{s:'KI',t:'Wink'},{s:'WEB',t:'Wink'},{s:'WEB',t:'Wink'},{s:'DVHard',t:'Ber'},{s:'DVHard',t:'Ber'},{s:'DVHard',t:'Ber'},null,{s:'Python',t:'Wink'},{s:'Python',t:'Wink'}],
+    [{s:'Wima',t:'Bon'},{s:'Wima',t:'Bon'},{s:'Orga',t:'Breth'},{s:'Rewe',t:'Breth',r:'R4'},{s:'Rewe',t:'Breth',r:'R4'},null,null,null,null],
+  ],
+  info2:[
+    [{s:'DVNet',t:'Heft'},{s:'DVNet',t:'Heft'},{s:'DVNet',t:'Heft'},{s:'DVNet',t:'Heft'},null,{s:'DVServ',t:'Hef'},{s:'DVServ',t:'Hef'},{s:'DVServ',t:'Hef'},null],
+    [{s:'Orga',t:'Breth'},{s:'Orga',t:'Breth'},{s:'Orga',t:'Breth'},{s:'OrgaP',t:'Breth'},{s:'OrgaP',t:'Breth'},null,null,null,null],
+    [null,null,{s:'Linux',t:'Oberm'},{s:'Linux',t:'Oberm'},{s:'Linux',t:'Oberm'},{s:'Orga',t:'Breth'},{s:'Orga',t:'Breth'},{s:'Orga',t:'Breth'},null],
+    [{s:'DVServ',t:'Hef'},{s:'DVServ',t:'Hef'},{s:'DVServ',t:'Hef'},{s:'WEB',t:'Wink'},{s:'WEB',t:'Wink'},{s:'Python',t:'Wi'},{s:'Python',t:'Wi'},null,null],
+    [{s:'KI',t:'Wink'},{s:'KI',t:'Wink'},{s:'KIProj',t:'Wink'},{s:'SQL',t:'Ober'},{s:'SQL',t:'Ober'},null,null,null,null],
+  ],
+  freko1:[
+    [{s:'SGram',t:'Cas'},{s:'SSpue',t:'Cas'},{s:'Hako',t:'Schi'},{s:'Ft',t:'Schi'},{s:'Spue',t:'Schi'},{s:'Spue',t:'Schi'},{s:'PuG',t:'Blad'},{s:'PuG',t:'Blad'},null],
+    [{s:'Gram',t:'Bo'},{s:'Dic',t:'Bon'},{s:'Dol',t:'Hay'},null,null,null,null,null,null],
+    [{s:'Hea',t:'Schi'},{s:'Hea',t:'Schi'},{s:'SUeber',t:'Cas'},{s:'SUeber',t:'Cas'},{s:'SSpue',t:'Cas'},null,null,null,null],
+    [{s:'Hia',t:'Bon'},{s:'Hia',t:'Bon'},{s:'Gram',t:'Schi'},{s:'Ft',t:'Schi'},null,null,null,null,null],
+    [{s:'BWL',t:'Breth'},{s:'D',t:'Breth'},{s:'SGram',t:'Cas'},{s:'Ppt',t:'Berndt',r:'R5'},{s:'Ppt',t:'Berndt',r:'R5'},null,null,null,null],
+  ],
+  freko2:[
+    [{s:'Hia',t:'Schi'},null,{s:'Laku',t:'Hay'},{s:'Laku',t:'Hay'},{s:'Hifa',t:'Hay'},null,{s:'Spue',t:'Schi'},null,null],
+    [{s:'Hako',t:'Hay'},{s:'Hako',t:'Hay'},{s:'Dol',t:'Hay'},{s:'Dol',t:'Hay'},{s:'SGram',t:'Scho'},{s:'SUe',t:'Scho'},null,null,null],
+    [{s:'BWL',t:'Breth'},{s:'D',t:'Breth'},{s:'Ft',t:'Schi'},{s:'Ft',t:'Schi'},{s:'Hefa',t:'Schi'},null,null,null,null],
+    [{s:'Her',t:'Schi'},{s:'Hako',t:'Schi'},{s:'Gram',t:'Bon'},{s:'SUe',t:'Scho'},{s:'SHako',t:'Scho'},{s:'SHako',t:'Scho'},{s:'SGram',t:'Scho'},null,null],
+    [{s:'Hea',t:'Bon'},{s:'HeaU',t:'Bon'},null,{s:'SpueS',t:'Cas'},{s:'SpueS',t:'Cas'},null,null,null,null],
+  ],
+  mr:[
+    [{s:'Ge',t:''},{s:'Ge',t:''},{s:'D',t:'Breth'},{s:'D',t:'Breth'},{s:'Sowe',t:'Reut'},{s:'Sowe',t:'Reut'},{s:'Sowe',t:'Reut'},{s:'Sowe',t:'Reut'},null],
+    [{s:'E',t:'Car'},{s:'E',t:'Car'},{s:'Ma',t:'Bon'},{s:'Ma',t:'Bon'},{s:'Phy',t:'Ober'},{s:'Phy',t:'Ober'},{s:'DFoe',t:'Breth'},{s:'DFoe',t:'Breth'},null],
+    [{s:'E',t:'Car'},{s:'E',t:'Car'},{s:'E',t:'Car'},{s:'E',t:'Car'},null,null,null,null,null],
+    [{s:'Ma',t:'Bon'},{s:'Ma',t:'Bon'},{s:'Ma',t:'Bon'},{s:'Ma',t:'Bon'},{s:'DGrund',t:'Bon'},{s:'DGrund',t:'Bon'},null,null,null],
+    [{s:'PuG',t:'Bla'},{s:'PuG',t:'Bla'},{s:'PuG',t:'Bla'},{s:'PuG',t:'Bla'},{s:'MaFoe',t:''},{s:'MaFoe',t:''},null,null,null],
+  ],
+};
+
+// {label, cls, display}
+const SM = {
+  JAVA:   {l:'Java',          c:'sc-java', d:'Java'},
+  Linux:  {l:'Linux',         c:'sc-linux',d:'Linux'},
+  Acc:    {l:'Access',        c:'sc-acc',  d:'Access'},
+  BWL:    {l:'BWL',           c:'sc-bwl',  d:'BWL'},
+  Rewe:   {l:'Rechnungswesen',c:'sc-rewe', d:'Rewe'},
+  Orga:   {l:'Organisation',  c:'sc-orga', d:'Orga'},
+  E:      {l:'Englisch',      c:'sc-e',    d:'Englisch'},
+  Ma:     {l:'Mathematik',    c:'sc-ma',   d:'Mathe'},
+  DVHard: {l:'DV Hardware',   c:'sc-dv',   d:'DV Hard'},
+  DVNet:  {l:'DV Netzwerke',  c:'sc-dv',   d:'DV Netz'},
+  DVServ: {l:'DV Server',     c:'sc-dv',   d:'DV Serv'},
+  WEB:    {l:'Web-Entwicklung',c:'sc-web', d:'WEB'},
+  PuG:    {l:'Politik & Ges.',c:'sc-pug',  d:'PuG'},
+  Python: {l:'Python',        c:'sc-py',   d:'Python'},
+  Exc:    {l:'Excel',         c:'sc-exc',  d:'Excel'},
+  KI:     {l:'Künstl. Intell.',c:'sc-ki',  d:'KI'},
+  KIProj: {l:'KI-Projekt',    c:'sc-ki',   d:'KI-Proj'},
+  Wima:   {l:'Wirtschaftsmath.',c:'sc-wima',d:'WiMa'},
+  InV:    {l:'Investition',   c:'sc-inv',  d:'InV'},
+  Voc:    {l:'Vokabeln (E)',  c:'sc-voc',  d:'Voc'},
+  SQL:    {l:'SQL',           c:'sc-sql',  d:'SQL'},
+  OrgaP:  {l:'Orga-Projekt',  c:'sc-orga', d:'Orga Proj'},
+  SGram:  {l:'S. Grammatik',  c:'sc-e',    d:'S. Gram'},
+  SSpue:  {l:'Schreibübung',  c:'sc-voc',  d:'S. Spü'},
+  Hako:   {l:'Handelskorr.',  c:'sc-orga', d:'Hako'},
+  Ft:     {l:'Fachtext',      c:'sc-zzz',  d:'Fachtext'},
+  Spue:   {l:'Schreibübung',  c:'sc-voc',  d:'Spü'},
+  Gram:   {l:'Grammatik',     c:'sc-e',    d:'Gramm.'},
+  Dic:    {l:'Diktat',        c:'sc-voc',  d:'Diktat'},
+  Dol:    {l:'Dolmetschen',   c:'sc-e',    d:'Dolm.'},
+  SUeber: {l:'S. Übersetzung',c:'sc-e',    d:'S. Über'},
+  Hea:    {l:'Hör-/Leseverst.',c:'sc-e',   d:'Hea'},
+  HeaU:   {l:'Hör-/Üb.',     c:'sc-e',    d:'Hea/Üb'},
+  Hia:    {l:'Hör-/Einstieg', c:'sc-e',    d:'Hia'},
+  Her:    {l:'Hör-/Einstieg', c:'sc-e',    d:'Her'},
+  Ppt:    {l:'Präsentation',  c:'sc-exc',  d:'Präs.'},
+  D:      {l:'Deutsch',       c:'sc-e',    d:'Deutsch'},
+  SUe:    {l:'Schreibübung',  c:'sc-voc',  d:'S. Üb'},
+  SGram2: {l:'S. Grammatik',  c:'sc-e',    d:'S. Gram'},
+  SHako:  {l:'S. Handelskorr.',c:'sc-orga',d:'S. Hako'},
+  SpueS:  {l:'Schreib-Übung', c:'sc-voc',  d:'Spü S'},
+  Laku:   {l:'Lagerbuchhalt.',c:'sc-bwl',  d:'LaBu'},
+  Hifa:   {l:'Hör-Fachtext',  c:'sc-zzz',  d:'Hifa'},
+  Hefa:   {l:'Hör-Fachtext',  c:'sc-zzz',  d:'Hefa'},
+  Ge:     {l:'Geschichte',    c:'sc-geo',  d:'Geschichte'},
+  Sowe:   {l:'Sozialwirtsch.',c:'sc-sowe', d:'Sowe'},
+  Phy:    {l:'Physik',        c:'sc-phy',  d:'Physik'},
+  DFoe:   {l:'Dt. Förderung', c:'sc-e',    d:'D. Fö'},
+  DGrund: {l:'Dt. Grundlagen',c:'sc-e',    d:'D. Grund'},
+  MaFoe:  {l:'Ma-Förderung',  c:'sc-ma',   d:'Ma Fö'},
+};
+function sm(s){return SM[s]||{l:s,c:'sc-zzz',d:s}}
+
+// Exams per class (klausurenplan)
+const EXAMS = {
+  info1:[
+    {date:'2026-01-04',s:'Rewe',  l:'Rechnungswesen',t:'Klausur'},
+    {date:'2026-01-05',s:'DVHard',l:'DV Netzwerke',  t:'Klausur'},
+    {date:'2026-01-06',s:'Orga',  l:'Organisation',  t:'Klausur'},
+    {date:'2026-01-13',s:'E',     l:'Englisch',       t:'Klausur'},
+    {date:'2026-01-21',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-01-23',s:'Acc',   l:'Access',         t:'Klausur'},
+    {date:'2026-01-26',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-01-30',s:'Ma',    l:'Mathematik',     t:'Klausur'},
+    {date:'2026-03-10',s:'E',     l:'Englisch',       t:'Klausur'},
+    {date:'2026-03-13',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-03-23',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
+    {date:'2026-03-27',s:'Ma',    l:'Mathematik',     t:'Klausur'},
+    {date:'2026-04-13',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-04-15',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-04-22',s:'Exc',   l:'Excel',          t:'Klausur'},
+    {date:'2026-04-23',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
+    {date:'2026-04-24',s:'Rewe',  l:'Rechnungswesen', t:'Klausur'},
+    {date:'2026-04-28',s:'JAVA',  l:'Java',           t:'Klausur'},
+    {date:'2026-04-29',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-05-05',s:'E',     l:'Englisch',       t:'Klausur'},
+    {date:'2026-05-07',s:'WEB',   l:'Webentwicklung', t:'Klausur'},
+    {date:'2026-05-13',s:'Acc',   l:'Access',         t:'Klausur'},
+    {date:'2026-05-18',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-05-21',s:'Python',l:'Python',         t:'Klausur'},
+    {date:'2026-06-10',s:'Exc',   l:'Excel',          t:'Klausur'},
+    {date:'2026-06-11',s:'KI',    l:'Künstl. Intell.',t:'Klausur'},
+    {date:'2026-06-15',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-06-17',s:'Acc',   l:'Access',         t:'Klausur'},
+    {date:'2026-06-18',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
+    {date:'2026-06-24',s:'Rewe',  l:'Rechnungswesen', t:'Klausur'},
+    {date:'2026-06-26',s:'Ma',    l:'Mathematik',     t:'Klausur'},
+    {date:'2026-06-29',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-06-30',s:'JAVA',  l:'Java',           t:'Klausur'},
+    {date:'2026-07-01',s:'Orga',  l:'AP Organisation',t:'AP'},
+    {date:'2026-07-03',s:'WEB',   l:'AB Webentwicklung',t:'AP'},
+    {date:'2026-07-06',s:'Python',l:'AP Python',      t:'AP'},
+    {date:'2026-07-08',s:'SQL',   l:'AP SQL',         t:'AP'},
+    {date:'2026-07-10',s:'E',     l:'Zeugnis 🎓',     t:'Zeugnis'},
+  ],
+  info2:[
+    {date:'2026-01-02',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
+    {date:'2026-01-03',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-01-20',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-01-27',s:'DVNet', l:'3D / Rewe',      t:'Klausur'},
+    {date:'2026-01-28',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-01-29',s:'JAVA',  l:'Java',           t:'Klausur'},
+    {date:'2026-02-02',s:'JAVA',  l:'AP Java',        t:'AP'},
+    {date:'2026-02-04',s:'BWL',   l:'AB BWL',         t:'AP'},
+    {date:'2026-02-06',s:'Rewe',  l:'AP Rewe',        t:'AP'},
+    {date:'2026-03-16',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-04-16',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-04-20',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
+    {date:'2026-05-06',s:'KI',    l:'MS Project',     t:'Klausur'},
+    {date:'2026-05-07',s:'WEB',   l:'Webentwicklung', t:'Klausur'},
+    {date:'2026-05-12',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-05-21',s:'Python',l:'Python',         t:'Klausur'},
+    {date:'2026-05-22',s:'SQL',   l:'SQL',            t:'Klausur'},
+    {date:'2026-06-08',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
+    {date:'2026-06-10',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-06-12',s:'KI',    l:'KI',             t:'Klausur'},
+    {date:'2026-06-23',s:'KI',    l:'MS Project',     t:'Klausur'},
+    {date:'2026-07-10',s:'E',     l:'Zeugnis 🎓',     t:'Zeugnis'},
+  ],
+  freko1:null,
+  freko2:null,
+  mr:null,
+};
+
+const FERIEN = [
+  {name:'Faschingsferien', s:'2026-02-16', e:'2026-02-20'},
+  {name:'Osterferien',     s:'2026-03-30', e:'2026-04-11'},
+  {name:'Pfingstferien',   s:'2026-05-30', e:'2026-06-13'},
+  {name:'Sommerferien',    s:'2026-07-30', e:'2026-09-14'},
+];
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+const p2=n=>String(n).padStart(2,'0');
+function nowM(){const d=new Date();return d.getHours()*60+d.getMinutes()}
+function todayDI(){const d=new Date().getDay();return d===0||d===6?-1:d-1}
+const DWS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const DWK=['So','Mo','Di','Mi','Do','Fr','Sa'];
+const MN=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MNS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+function fmtTime(d){return p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds())}
+function fmtDate(d){return DWS[d.getDay()]+', '+d.getDate()+'. '+MNS[d.getMonth()]+' '+d.getFullYear()}
+function fmtDateShort(d){return DWK[d.getDay()]+' '+p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'}
+function parseD(s){const[y,m,dy]=s.split('-').map(Number);return new Date(y,m-1,dy)}
+function todayMid(){const d=new Date();d.setHours(0,0,0,0);return d}
+function daysUntil(s){return Math.round((parseD(s)-todayMid())/86400000)}
+function mHM(m){const h=Math.floor(m/60),mm=m%60;return h>0?h+'h '+p2(mm)+'m':mm+' min'}
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+
+let isDark = localStorage.getItem('sp-theme')==='dark';
+let selCls = localStorage.getItem('sp-class')||'info1';
+
+// ─── THEME ────────────────────────────────────────────────────────────────────
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const ic=document.getElementById('themeIcon');
+  if(ic)ic.setAttribute('data-lucide',isDark?'sun':'moon');
+  if(window.lucide)lucide.createIcons();
+}
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  isDark=!isDark;localStorage.setItem('sp-theme',isDark?'dark':'light');applyTheme();
+});
+
+// ─── CLASS TABS ───────────────────────────────────────────────────────────────
+
+document.getElementById('classTabs').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-cls]');
+  if(!btn)return;
+  selCls=btn.dataset.cls;
+  localStorage.setItem('sp-class',selCls);
+  document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.cls===selCls));
+  activeSubj=null;hideTip();
+  renderAll();
+});
+// set initial active
+document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.cls===selCls));
+
+// ─── TIMETABLE ────────────────────────────────────────────────────────────────
+
+function renderTT(){
+  const grid=document.getElementById('ttGrid');
+  const dayIdx=todayDI();
+  const nm=nowM();
+  let currP=-1;
+  for(let i=0;i<PERIODS.length;i++)if(nm>=PERIODS[i].sm&&nm<PERIODS[i].em&&dayIdx>=0)currP=i;
+  const sched=SCHED[selCls];
+  const cls=CLASSES.find(c=>c.id===selCls);
+
+  document.getElementById('ttTitle').textContent='Wochenplan — '+cls.name;
+  document.getElementById('headerSub').textContent=cls.name+' · '+cls.room+' · ab 09. März 2026';
+
+  const E=(tag,cls2,html)=>{const e=document.createElement(tag);if(cls2)e.className=cls2;if(html!=null)e.innerHTML=html;return e};
+  grid.innerHTML='';
+  grid.appendChild(E('div','tt-hdr',''));
+  for(let di=0;di<5;di++){
+    const h=E('div','tt-hdr'+(di===dayIdx?' td':''),['Mo','Di','Mi','Do','Fr'][di]);
+    if(di===dayIdx){const d=document.createElement('div');d.className='tt-hdr-dot';h.appendChild(d);}
+    grid.appendChild(h);
+  }
+  for(let pi=0;pi<PERIODS.length;pi++){
+    if(BRK.has(pi)){const br=E('div','tt-brk','');br.appendChild(E('div','tt-brk-line',''));grid.appendChild(br);}
+    const p=PERIODS[pi];
+    grid.appendChild(E('div','tt-time',`<span class="tt-pn">${p.n}.</span>${p.s}<br>${p.e}`));
+    for(let di=0;di<5;di++){
+      const l=sched[di][pi];
+      if(!l){grid.appendChild(E('div','tt-cell emp',''));continue;}
+      const m=sm(l.s);
+      let cls2=`tt-cell ${m.c}`;
+      if(di===dayIdx)cls2+=' td';
+      if(di===dayIdx&&pi===currP)cls2+=' now';
+      const pl=pi>0?sched[di][pi-1]:null;
+      const nl=pi<8?sched[di][pi+1]:null;
+      const cp=pl&&pl.s===l.s&&!BRK.has(pi);
+      const cn=nl&&nl.s===l.s&&!BRK.has(pi+1);
+      if(cp&&cn)cls2+=' gm';else if(cp)cls2+=' gl';else if(cn)cls2+=' gf';
+      const cell=E('div',cls2,'');
+      cell.dataset.subj=l.s;
+      cell._lesson=l;
+      cell._pi=pi;
+      if(!cp){cell.innerHTML=`<div class="cs">${m.d}</div><div class="ct">${l.t}</div>`;}
+      else{cell.innerHTML=`<div class="cs" style="opacity:.35">···</div>`;}
+      if(l.r)cell.appendChild(E('div','cr',l.r));
+      grid.appendChild(cell);
+    }
+  }
+  if(activeSubj)highlightSubj(activeSubj);
+}
+
+// ─── LEGEND ───────────────────────────────────────────────────────────────────
+
+function renderLegend(){
+  const used=new Set();
+  for(const day of SCHED[selCls])for(const l of day)if(l)used.add(l.s);
+  const leg=document.getElementById('legend');
+  leg.innerHTML='';
+  for(const s of used){
+    const m=sm(s);
+    const it=document.createElement('div');
+    it.className=`lg-item ${m.c}`;
+    it.innerHTML=`<div class="lg-dot"></div>${m.l}`;
+    leg.appendChild(it);
+  }
+}
+
+// ─── BANNER ───────────────────────────────────────────────────────────────────
+
+function updateBanner(){
+  const bn=document.getElementById('banner');
+  const nm=nowM(),di=todayDI();
+  if(di<0){bn.className='lesson-banner hidden';return;}
+  const sched=SCHED[selCls];
+  for(let i=0;i<PERIODS.length;i++){
+    const p=PERIODS[i];
+    if(nm>=p.sm&&nm<p.em){
+      const l=sched[di][i];
+      const prog=((nm-p.sm)/(p.em-p.sm)*100).toFixed(1);
+      const ml=p.em-nm;
+      if(l){
+        const m=sm(l.s);
+        bn.className='lesson-banner active';
+        document.getElementById('lbEy').textContent=p.n+'. Stunde · '+p.s+' – '+p.e;
+        document.getElementById('lbSubj').textContent=m.l;
+        document.getElementById('lbDet').textContent=l.t+(l.r?' · '+l.r:'');
+        document.getElementById('lbBar').style.width=prog+'%';
+        document.getElementById('lbCount').textContent=mHM(ml);
+        document.getElementById('lbCountLbl').textContent='verbleibend';
+      } else {
+        bn.className='lesson-banner free';
+        document.getElementById('lbEy').textContent=p.n+'. Stunde · '+p.s+' – '+p.e;
+        document.getElementById('lbSubj').textContent='Freistunde';
+        document.getElementById('lbDet').textContent='Keine Unterrichtseinheit';
+        document.getElementById('lbBar').style.width=prog+'%';
+        document.getElementById('lbCount').textContent=mHM(ml);
+        document.getElementById('lbCountLbl').textContent='bis Ende';
+      }
+      return;
+    }
+  }
+  for(const[idx,bsm,bem]of BREAKS){
+    if(nm>=bsm&&nm<bem){
+      bn.className='lesson-banner break-time';
+      document.getElementById('lbEy').textContent='Pause';
+      document.getElementById('lbSubj').textContent='Pause · '+bsm/60|0+':'+p2(bsm%60)+' – '+bem/60|0+':'+p2(bem%60);
+      document.getElementById('lbDet').textContent='Weiter um '+PERIODS[idx].s+' Uhr';
+      document.getElementById('lbBar').style.width=((nm-bsm)/(bem-bsm)*100).toFixed(1)+'%';
+      document.getElementById('lbCount').textContent=mHM(bem-nm);
+      document.getElementById('lbCountLbl').textContent='bis Unterricht';
+      return;
+    }
+  }
+  if(nm<PERIODS[0].sm){
+    bn.className='lesson-banner break-time';
+    document.getElementById('lbEy').textContent='Vor Schulbeginn';
+    document.getElementById('lbSubj').textContent='Schulbeginn um 08:00 Uhr';
+    document.getElementById('lbDet').textContent=DWS[new Date().getDay()];
+    document.getElementById('lbBar').style.width='0%';
+    document.getElementById('lbCount').textContent=mHM(PERIODS[0].sm-nm);
+    document.getElementById('lbCountLbl').textContent='bis Schulbeginn';
+    return;
+  }
+  if(nm>=PERIODS[PERIODS.length-1].em){
+    bn.className='lesson-banner done';
+    document.getElementById('lbEy').textContent='Schultag beendet';
+    document.getElementById('lbSubj').textContent='Schulschluss — guter Abend!';
+    document.getElementById('lbDet').textContent='Morgen wieder ab 08:00 Uhr';
+    document.getElementById('lbBar').style.width='100%';
+    document.getElementById('lbCount').textContent='✓';
+    document.getElementById('lbCountLbl').textContent='Feierabend';
+    return;
+  }
+  bn.className='lesson-banner hidden';
+}
+
+// ─── NEXT EXAM ────────────────────────────────────────────────────────────────
+
+function renderNex(){
+  const exams=EXAMS[selCls];
+  function build(id){
+    const el=document.getElementById(id);
+    if(!exams){el.innerHTML='<div class="tod-empty">Kein Klausurenplan für diese Klasse verfügbar</div>';return;}
+    const today=todayMid();
+    let next=null;
+    for(const ex of exams){const d=parseD(ex.date);if(d>=today){next={...ex,days:daysUntil(ex.date)};break;}}
+    if(!next){el.innerHTML='<div class="tod-empty">Keine weiteren Klausuren</div>';return;}
+    const m=sm(next.s);
+    const d=parseD(next.date);
+    let bc,bt;
+    if(next.t==='Zeugnis'){bc='nb-ap';bt='Zeugnis';}
+    else if(next.t==='AP'){bc='nb-ap';bt='AP';}
+    else if(next.days===0){bc='nb-today';bt='HEUTE';}
+    else if(next.days===1){bc='nb-soon';bt='Morgen';}
+    else if(next.days<=4){bc='nb-soon';bt='in '+next.days+' Tagen';}
+    else{bc='nb-norm';bt='in '+next.days+' Tagen';}
+    el.innerHTML=`<div class="nex-body"><div class="nex-ey">${next.t}</div><div class="nex-subj ${m.c}" style="color:var(--sc-text)">${next.l}</div><div class="nex-date">${DWS[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]} ${d.getFullYear()}</div><div class="nex-badge ${bc}">${bt}</div></div>`;
+  }
+  build('nexBody');build('nexBodyMob');
+}
+
+// ─── TODAY LIST ───────────────────────────────────────────────────────────────
+
+function renderToday(){
+  const di=todayDI(),nm=nowM();
+  const sched=SCHED[selCls];
+  function build(lid,tid){
+    const le=document.getElementById(lid),te=document.getElementById(tid);
+    if(!le)return;
+    if(di<0){if(te)te.textContent='Wochenende';le.innerHTML='<div class="tod-empty">Kein Unterricht</div>';return;}
+    // build lesson blocks
+    const blocks=[];
+    for(let pi=0;pi<PERIODS.length;pi++){
+      const l=sched[di][pi];
+      if(!l)continue;
+      const pl=pi>0?sched[di][pi-1]:null;
+      if(pl&&pl.s===l.s&&!BRK.has(pi))continue;
+      let lpi=pi;
+      for(let j=pi+1;j<PERIODS.length;j++){if(!BRK.has(j)&&sched[di][j]&&sched[di][j].s===l.s)lpi=j;else break;}
+      blocks.push({l,pi,lpi});
+    }
+    // remaining lessons (not yet ended)
+    const rem=blocks.filter(b=>PERIODS[b.lpi].em>nm).length;
+    if(te)te.textContent=DWS[di+1]+(rem>0?' · noch '+rem+' Std.':'');
+    if(!blocks.length){le.innerHTML='<div class="tod-empty">Kein Unterricht heute</div>';return;}
+    let html='';
+    for(let i=0;i<blocks.length;i++){
+      const{l,pi,lpi}=blocks[i];
+      const ps=PERIODS[pi],pe=PERIODS[lpi];
+      const isNow=(nm>=ps.sm&&nm<pe.em);
+      const m=sm(l.s);
+      // gap indicator between consecutive blocks
+      if(i>0&&pi>blocks[i-1].lpi+1){
+        const gs=PERIODS[blocks[i-1].lpi+1].s,ge=PERIODS[pi-1].e;
+        html+=`<div class="tod-gap"><div class="tod-gap-dot"></div><div class="ti-time">${gs}–${ge}</div><div style="flex:1;font-style:italic">Freistunde</div></div>`;
+      }
+      html+=`<div class="tod-item${isNow?' now':''} ${m.c}"><div class="ti-dot"></div><div class="ti-time">${ps.s}–${pe.e}</div><div class="ti-subj">${m.l}</div><div class="ti-teach">${l.t}${l.r?' · '+l.r:''}</div>${isNow?'<div class="ti-now-tag">jetzt</div>':''}</div>`;
+    }
+    le.innerHTML=html;
+  }
+  build('todayList','todayTitle');build('todayListMob','todayTitleMob');
+}
+
+// ─── EXAM LIST ────────────────────────────────────────────────────────────────
+
+function renderExams(){
+  const exams=EXAMS[selCls];
+  const el=document.getElementById('examList');
+  if(!exams){el.innerHTML='<div class="ex-empty">Klausurenplan für diese Klasse nicht verfügbar</div>';return;}
+  const today=todayMid();
+  let html='',curM='',feriIdx=0,prevD=null;
+  for(const ex of exams){
+    const d=parseD(ex.date);
+    const mo=MN[d.getMonth()]+' '+d.getFullYear();
+    const days=daysUntil(ex.date);
+    const past=d<today;
+    const m=sm(ex.s);
+    if(mo!==curM){curM=mo;html+=`<div class="ex-mhdr">${mo}</div>`;}
+    // ferien dividers
+    while(feriIdx<FERIEN.length){
+      const fs=parseD(FERIEN[feriIdx].s);
+      if(fs>d)break;
+      if(!prevD||fs>prevD){
+        const fe=parseD(FERIEN[feriIdx].e);
+        html+=`<div class="ex-ferien">☀ ${FERIEN[feriIdx].name} · bis ${fe.getDate()}. ${MNS[fe.getMonth()]}</div>`;
+      }
+      feriIdx++;
+    }
+    prevD=d;
+    let bc,bt;
+    if(ex.t==='Zeugnis'){bc='eb-zg';bt='Zeugnis';}
+    else if(ex.t==='AP'){bc='eb-ap';bt='AP';}
+    else if(past){bc='eb-fut';bt='vorbei';}
+    else if(days===0){bc='eb-today';bt='HEUTE';}
+    else if(days<=3){bc='eb-soon';bt=days===1?'morgen':'in '+days+' T.';}
+    else{bc='eb-fut';bt='in '+days+' T.';}
+    html+=`<div class="ex-row${past?' past':''} ${m.c}"><div class="ex-dot"></div><div class="ex-date">${fmtDateShort(d)}</div><div class="ex-subj">${ex.l}</div><div class="ex-badge ${bc}">${bt}</div></div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ─── QUICKLINKS ───────────────────────────────────────────────────────────────
+
+const QLINKS = [
+  {name:'Notenportal', url:'https://notenportal.ifb-rosenheim.de/notenportal/schueler/login.php', icon:'bar-chart-2', host:'notenportal.ifb-rosenheim.de', c:'sc-rewe'},
+  {name:'Webentwicklerkurs', url:'https://webentwicklerkurs.de', icon:'code-2', host:'webentwicklerkurs.de', c:'sc-web', classes:['info1','info2']},
+  {name:'KI-Entwicklerkurs', url:'https://kientwicklerkurs.de', icon:'brain', host:'kientwicklerkurs.de', c:'sc-ki', classes:['info1','info2']},
+  {name:'Python-Entwicklerkurs', url:'https://pythonentwicklerkurs.de', icon:'file-code-2', host:'pythonentwicklerkurs.de', c:'sc-py', classes:['info1','info2']},
+];
+
+function renderQuicklinks(){
+  const html=QLINKS.filter(l=>!l.classes||l.classes.includes(selCls)).map(l=>`
+<a href="${l.url}" class="ql-item ${l.c}" target="_blank" rel="noopener noreferrer">
+  <div class="ql-icon"><i data-lucide="${l.icon}" style="width:15px;height:15px"></i></div>
+  <div class="ql-text"><div class="ql-name">${l.name}</div><div class="ql-url">${l.host}</div></div>
+  <i data-lucide="external-link" class="ql-arrow" style="width:13px;height:13px"></i>
+</a>`).join('');
+  ['quicklinks','quicklinksMob'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=html;
+  });
+  lucide.createIcons();
+}
+
+// ─── SUBJECT HIGHLIGHT ───────────────────────────────────────────────────────
+
+let activeSubj=null;
+
+function highlightSubj(s){
+  document.querySelectorAll('.tt-cell').forEach(c=>{
+    if(c.classList.contains('emp'))return;
+    if(c.dataset.subj===s)c.classList.add('subj-hi');
+    else c.classList.add('subj-dim');
+  });
+}
+function clearHighlight(){
+  activeSubj=null;
+  document.querySelectorAll('.tt-cell').forEach(c=>c.classList.remove('subj-hi','subj-dim'));
+}
+
+document.getElementById('ttGrid').addEventListener('click',e=>{
+  const cell=e.target.closest('#ttGrid .tt-cell:not(.emp)');
+  if(!cell){clearHighlight();hideTip();return;}
+  const subj=cell.dataset.subj;
+  if(subj===activeSubj){clearHighlight();hideTip();return;}
+  clearHighlight();
+  activeSubj=subj;
+  highlightSubj(subj);
+  showTip(cell,cell._lesson,cell._pi);
+});
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#ttGrid')&&!e.target.closest('#cellTip')){
+    clearHighlight();hideTip();
+  }
+});
+
+// ─── TOOLTIP ──────────────────────────────────────────────────────────────────
+
+function showTip(cell,l,pi){
+  const tip=document.getElementById('cellTip');
+  const m=sm(l.s);
+  const p=PERIODS[pi];
+  const cls=CLASSES.find(c=>c.id===selCls);
+  const room=l.r||cls.room;
+  tip.innerHTML=`<div class="ctp-name ${m.c}" style="color:var(--sc-text)">${m.l}</div>
+<div class="ctp-row">Lehrer · ${l.t||'–'}</div>
+<div class="ctp-row">Raum · ${room}</div>
+<div class="ctp-row">Zeit · ${p.s} – ${p.e}</div>`;
+  const rect=cell.getBoundingClientRect();
+  let left=rect.right+8,top=rect.top;
+  if(left+230>window.innerWidth-10)left=rect.left-238;
+  if(left<8)left=8;
+  if(top+110>window.innerHeight-10)top=window.innerHeight-120;
+  tip.style.left=left+'px';
+  tip.style.top=top+'px';
+  tip.classList.add('vis');
+}
+function hideTip(){document.getElementById('cellTip').classList.remove('vis');}
+
+// ─── ICAL EXPORT ──────────────────────────────────────────────────────────────
+
+function exportIcal(){
+  const cls=CLASSES.find(c=>c.id===selCls);
+  const sched=SCHED[selCls];
+  // Monday of current week (or next if weekend)
+  const today=new Date();today.setHours(0,0,0,0);
+  const dow=today.getDay();
+  let monday=new Date(today);
+  if(dow===0)monday.setDate(today.getDate()+1);
+  else if(dow===6)monday.setDate(today.getDate()+2);
+  else monday.setDate(today.getDate()-(dow-1));
+  function idt(d,ts){
+    const[h,m]=ts.split(':').map(Number);
+    return`${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}T${p2(h)}${p2(m)}00`;
+  }
+  const events=[];
+  for(let di=0;di<5;di++){
+    const dd=new Date(monday);dd.setDate(monday.getDate()+di);
+    for(let pi=0;pi<PERIODS.length;pi++){
+      const l=sched[di][pi];
+      if(!l)continue;
+      const pl=pi>0?sched[di][pi-1]:null;
+      if(pl&&pl.s===l.s&&!BRK.has(pi))continue;
+      let lpi=pi;
+      for(let j=pi+1;j<PERIODS.length;j++){if(!BRK.has(j)&&sched[di][j]&&sched[di][j].s===l.s)lpi=j;else break;}
+      const m=sm(l.s);
+      events.push([
+        'BEGIN:VEVENT',
+        `UID:${selCls}-d${di}-p${pi}@ifb.lol`,
+        `DTSTART:${idt(dd,PERIODS[pi].s)}`,
+        `DTEND:${idt(dd,PERIODS[lpi].e)}`,
+        `SUMMARY:${m.l}`,
+        `DESCRIPTION:${l.t||''}`,
+        `LOCATION:${l.r||cls.room}`,
+        'RRULE:FREQ=WEEKLY',
+        'END:VEVENT'
+      ].join('\r\n'));
+    }
+  }
+  const cal=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ifb.lol//Stundenplan//DE',
+    `X-WR-CALNAME:${cls.name} · Stundenplan`,'CALSCALE:GREGORIAN',
+    ...events,'END:VCALENDAR'].join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([cal],{type:'text/calendar;charset=utf-8'}));
+  a.download=`stundenplan-${selCls}.ics`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ─── CLOCK ────────────────────────────────────────────────────────────────────
+
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clockTime').textContent=fmtTime(n);
+  document.getElementById('clockDate').textContent=fmtDate(n);
+}
+
+// ─── COMMENTS ────────────────────────────────────────────────────────────────
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cmTokKey(id){return 'sp-cm-tok-'+id;}
+function cmGetTok(id){return localStorage.getItem(cmTokKey(id));}
+function cmSetTok(id,t){localStorage.setItem(cmTokKey(id),t);}
+function cmDelTok(id){localStorage.removeItem(cmTokKey(id));}
+function fmtCmDate(s){const d=new Date(s.replace(' ','T'));return p2(d.getDate())+'.'+p2(d.getMonth()+1)+'. '+p2(d.getHours())+':'+p2(d.getMinutes());}
+
+async function renderComments(){
+  const el=document.getElementById('cmList');
+  const cnt=document.getElementById('cmCount');
+  try{
+    const r=await fetch('/api/stundenplan-comments?cls='+selCls);
+    const arr=await r.json();
+    cnt.textContent=arr.length?arr.length+' Kommentar'+(arr.length===1?'':'e'):'';
+    if(!arr.length){el.innerHTML='<div class="cm-list-empty">Noch keine Kommentare</div>';return;}
+    el.innerHTML=arr.map(c=>{
+      const canDel=!!cmGetTok(c.id);
+      return`<div class="cm-item"><div class="cm-meta"><span class="cm-name">${esc(c.name)}</span><span class="cm-ts">${fmtCmDate(c.created_at)}</span>${canDel?`<button class="cm-del" data-id="${c.id}" title="Löschen"><i data-lucide="x" style="width:12px;height:12px"></i></button>`:''}</div><div class="cm-text">${esc(c.text)}</div></div>`;
+    }).join('');
+    lucide.createIcons();
+  }catch(e){console.error('renderComments',e);el.innerHTML='<div class="cm-list-empty">Fehler beim Laden</div>';}
+}
+
+document.getElementById('cmList').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-id]');
+  if(!btn)return;
+  const id=btn.dataset.id;
+  const tok=cmGetTok(id);
+  if(!tok)return;
+  btn.disabled=true;
+  try{
+    const r=await fetch('/api/stundenplan-comments/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({delete_token:tok})});
+    if(r.ok){cmDelTok(id);renderComments();}
+  }catch{}
+  btn.disabled=false;
+});
+
+document.getElementById('cmSubmit').addEventListener('click',async()=>{
+  const name=document.getElementById('cmName').value.trim();
+  const text=document.getElementById('cmText').value.trim();
+  if(!name||!text)return;
+  const btn=document.getElementById('cmSubmit');
+  btn.disabled=true;
+  try{
+    const r=await fetch('/api/stundenplan-comments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cls:selCls,name,text})});
+    const data=await r.json();
+    if(r.ok){cmSetTok(data.id,data.delete_token);document.getElementById('cmText').value='';localStorage.setItem('sp-cm-name',name);renderComments();}
+    else console.error('POST comment failed',r.status,data);
+  }catch(e){console.error('submit comment',e);}
+  btn.disabled=false;
+});
+
+document.getElementById('cmText').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))document.getElementById('cmSubmit').click();
+});
+
+const savedName=localStorage.getItem('sp-cm-name');
+if(savedName)document.getElementById('cmName').value=savedName;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+function renderAll(){renderTT();renderLegend();renderNex();renderToday();renderExams();renderQuicklinks();renderComments();}
+
+applyTheme();
+renderAll();
+updateClock();
+updateBanner();
+document.getElementById('icalBtn').addEventListener('click',exportIcal);
+setInterval(()=>{updateClock();updateBanner();},1000);
+setInterval(()=>{renderTT();renderToday();},30000);
+lucide.createIcons();
+</script>
+</body>
+</html>
