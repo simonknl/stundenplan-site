@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klausurenplan · IFB</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --bg:#f0f4f9;--surface:#fff;--surface-2:#f8fafc;--border:#e2e8f0;--border-s:#f0f4f8;
+  --text:#0f172a;--text-2:#334155;--muted:#64748b;--subtle:#94a3b8;--blue:#3b82f6;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+  --r:10px;--r-lg:14px;
+}
+[data-theme="dark"] {
+  --bg:#0d1117;--surface:#161b27;--surface-2:#1c2333;--border:#2d3748;--border-s:#1e2a3a;
+  --text:#e2e8f0;--text-2:#a0aec0;--muted:#718096;--subtle:#4a5568;--blue:#63b3ed;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 4px 12px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-size:14px;line-height:1.5;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.page{max-width:900px;margin:0 auto;padding:16px}
+@media(min-width:768px){.page{padding:24px 32px}}
+
+.header{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.header-title{flex:1;min-width:160px}
+.header-title h1{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.header-title .sub{font-size:12px;color:var(--muted);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:background .15s,color .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+
+.class-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:4px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.ct-btn{flex:1;min-width:60px;padding:7px 10px;border:none;border-radius:var(--r);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s;font-family:inherit;white-space:nowrap}
+.ct-btn:hover{background:var(--surface-2);color:var(--text)}
+.ct-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(59,130,246,.3)}
+
+.layout{display:flex;flex-direction:column;gap:16px}
+@media(min-width:800px){.layout{flex-direction:row;align-items:flex-start}.main-col{flex:1;min-width:0}.side-col{width:280px;flex-shrink:0}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.card-head{padding:13px 18px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-head h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.card-head .chi{color:var(--subtle)}
+
+.nex-body{padding:14px 18px}
+.nex-ey{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);margin-bottom:5px}
+.nex-subj{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.nex-date{font-size:12px;color:var(--muted);margin-top:2px}
+.nex-badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;margin-top:9px}
+.nb-today{background:#fee2e2;color:#dc2626}.nb-soon{background:#fef3c7;color:#d97706}
+.nb-norm{background:#eff6ff;color:#2563eb}.nb-ap{background:#f0fdf4;color:#16a34a}
+[data-theme="dark"] .nb-today{background:#450a0a;color:#f87171}
+[data-theme="dark"] .nb-soon{background:#451a03;color:#fbbf24}
+[data-theme="dark"] .nb-norm{background:#172554;color:#93c5fd}
+[data-theme="dark"] .nb-ap{background:#052e16;color:#4ade80}
+
+.ex-mhdr{padding:10px 18px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);background:var(--surface-2);border-top:1px solid var(--border)}
+.ex-mhdr:first-child{border-top:none}
+.ex-row{display:flex;align-items:center;gap:10px;padding:8px 18px;border-top:1px solid var(--border-s);transition:background .1s}
+.ex-row:hover{background:var(--surface-2)}
+.ex-row.past{opacity:.35}
+.ex-dot{width:8px;height:8px;border-radius:50%;background:var(--sc);flex-shrink:0}
+.ex-date{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);width:64px;flex-shrink:0}
+.ex-subj{flex:1;font-weight:600;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-badge{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;flex-shrink:0}
+.eb-today{background:#fee2e2;color:#dc2626}
+.eb-soon{background:#fef3c7;color:#d97706}
+.eb-fut{background:#f1f5f9;color:#64748b}
+.eb-ap{background:#eff6ff;color:#2563eb}
+.eb-zg{background:#f0fdf4;color:#16a34a}
+[data-theme="dark"] .eb-today{background:#450a0a;color:#f87171}
+[data-theme="dark"] .eb-soon{background:#451a03;color:#fbbf24}
+[data-theme="dark"] .eb-fut{background:#1e293b;color:#64748b}
+[data-theme="dark"] .eb-ap{background:#172554;color:#93c5fd}
+[data-theme="dark"] .eb-zg{background:#052e16;color:#4ade80}
+.ex-empty{padding:20px 18px;text-align:center;font-size:13px;color:var(--muted)}
+.ex-ferien{padding:6px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#16a34a;background:#f0fdf4;border-top:1px solid #bbf7d0}
+[data-theme="dark"] .ex-ferien{color:#4ade80;background:#052e16;border-color:#166534}
+.tod-empty{padding:14px 18px;font-size:13px;color:var(--muted);text-align:center}
+
+/* subject colors */
+.sc-java{--sc:#f59e0b}.sc-linux{--sc:#10b981}.sc-acc{--sc:#8b5cf6}.sc-bwl{--sc:#3b82f6}
+.sc-rewe{--sc:#ef4444}.sc-orga{--sc:#14b8a6}.sc-e{--sc:#f97316}.sc-ma{--sc:#ec4899}
+.sc-dv{--sc:#6366f1}.sc-web{--sc:#06b6d4}.sc-pug{--sc:#84cc16}.sc-py{--sc:#22c55e}
+.sc-exc{--sc:#65a30d}.sc-ki{--sc:#a855f7}.sc-wima{--sc:#f43f5e}.sc-inv{--sc:#0ea5e9}
+.sc-voc{--sc:#fb923c}.sc-sql{--sc:#0891b2}.sc-geo{--sc:#78716c}.sc-phy{--sc:#7c3aed}
+.sc-sowe{--sc:#84cc16}.sc-zzz{--sc:#94a3b8}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header">
+  <div class="header-title">
+    <h1>Klausurenplan</h1>
+    <div class="sub">IFB</div>
+  </div>
+  <div class="header-actions">
+    <nav style="display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;box-shadow:var(--shadow-sm)">
+      <a href="stundenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Stundenplan</a>
+      <a href="klausurenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:#fff;background:var(--blue);text-decoration:none;white-space:nowrap">Klausurenplan</a>
+      <a href="notenrechner.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Notenrechner</a>
+    </nav>
+    <button class="icon-btn" id="themeBtn" title="Theme"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
+  </div>
+</div>
+
+<div class="class-tabs" id="classTabs">
+  <button class="ct-btn active" data-cls="info1">Info 1</button>
+  <button class="ct-btn" data-cls="info2">Info 2</button>
+  <button class="ct-btn" data-cls="freko1">Freko 1</button>
+  <button class="ct-btn" data-cls="freko2">Freko 2</button>
+  <button class="ct-btn" data-cls="mr">MR</button>
+</div>
+
+<div class="layout">
+  <div class="main-col">
+    <div class="card">
+      <div class="card-head">
+        <i data-lucide="book-open" style="width:14px;height:14px" class="chi"></i>
+        <h2>Klausurenplan</h2>
+      </div>
+      <div id="examList"></div>
+    </div>
+  </div>
+  <div class="side-col">
+    <div class="card">
+      <div class="card-head"><i data-lucide="alarm-clock" style="width:14px;height:14px" class="chi"></i><h2>Nächste Klausur</h2></div>
+      <div id="nexBody"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const CLASSES = [
+  {id:'info1',name:'Info 1'},{id:'info2',name:'Info 2'},
+  {id:'freko1',name:'Freko 1'},{id:'freko2',name:'Freko 2'},{id:'mr',name:'MR'},
+];
+
+const SM = {
+  JAVA:{l:'Java',c:'sc-java'},Linux:{l:'Linux',c:'sc-linux'},Acc:{l:'Access',c:'sc-acc'},
+  BWL:{l:'BWL',c:'sc-bwl'},Rewe:{l:'Rechnungswesen',c:'sc-rewe'},Orga:{l:'Organisation',c:'sc-orga'},
+  E:{l:'Englisch',c:'sc-e'},Ma:{l:'Mathematik',c:'sc-ma'},DVHard:{l:'DV Hardware',c:'sc-dv'},
+  DVNet:{l:'DV Netzwerke',c:'sc-dv'},DVServ:{l:'DV Server',c:'sc-dv'},WEB:{l:'Web-Entwicklung',c:'sc-web'},
+  PuG:{l:'Politik & Ges.',c:'sc-pug'},Python:{l:'Python',c:'sc-py'},Exc:{l:'Excel',c:'sc-exc'},
+  KI:{l:'Künstl. Intell.',c:'sc-ki'},Wima:{l:'Wirtschaftsmath.',c:'sc-wima'},SQL:{l:'SQL',c:'sc-sql'},
+};
+function sm(s){return SM[s]||{l:s,c:'sc-zzz'}}
+
+const EXAMS = {
+  info1:[
+    {date:'2026-01-04',s:'Rewe',  l:'Rechnungswesen',t:'Klausur'},
+    {date:'2026-01-05',s:'DVHard',l:'DV Netzwerke',  t:'Klausur'},
+    {date:'2026-01-06',s:'Orga',  l:'Organisation',  t:'Klausur'},
+    {date:'2026-01-13',s:'E',     l:'Englisch',       t:'Klausur'},
+    {date:'2026-01-21',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-01-23',s:'Acc',   l:'Access',         t:'Klausur'},
+    {date:'2026-01-26',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-01-30',s:'Ma',    l:'Mathematik',     t:'Klausur'},
+    {date:'2026-03-10',s:'E',     l:'Englisch',       t:'Klausur'},
+    {date:'2026-03-13',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-03-23',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
+    {date:'2026-03-27',s:'Ma',    l:'Mathematik',     t:'Klausur'},
+    {date:'2026-04-13',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-04-15',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-04-22',s:'Exc',   l:'Excel',          t:'Klausur'},
+    {date:'2026-04-23',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
+    {date:'2026-04-24',s:'Rewe',  l:'Rechnungswesen', t:'Klausur'},
+    {date:'2026-04-28',s:'JAVA',  l:'Java',           t:'Klausur'},
+    {date:'2026-04-29',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-05-05',s:'E',     l:'Englisch',       t:'Klausur'},
+    {date:'2026-05-07',s:'WEB',   l:'Webentwicklung', t:'Klausur'},
+    {date:'2026-05-13',s:'Acc',   l:'Access',         t:'Klausur'},
+    {date:'2026-05-18',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-05-21',s:'Python',l:'Python',         t:'Klausur'},
+    {date:'2026-06-10',s:'Exc',   l:'Excel',          t:'Klausur'},
+    {date:'2026-06-11',s:'KI',    l:'Künstl. Intell.',t:'Klausur'},
+    {date:'2026-06-15',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-06-17',s:'Acc',   l:'Access',         t:'Klausur'},
+    {date:'2026-06-18',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
+    {date:'2026-06-24',s:'Rewe',  l:'Rechnungswesen', t:'Klausur'},
+    {date:'2026-06-26',s:'Ma',    l:'Mathematik',     t:'Klausur'},
+    {date:'2026-06-29',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-06-30',s:'JAVA',  l:'Java',           t:'Klausur'},
+    {date:'2026-07-01',s:'Orga',  l:'AP Organisation',t:'AP'},
+    {date:'2026-07-03',s:'WEB',   l:'AB Webentwicklung',t:'AP'},
+    {date:'2026-07-06',s:'Python',l:'AP Python',      t:'AP'},
+    {date:'2026-07-08',s:'SQL',   l:'AP SQL',         t:'AP'},
+    {date:'2026-07-10',s:'E',     l:'Zeugnis 🎓',     t:'Zeugnis'},
+  ],
+  info2:[
+    {date:'2026-01-02',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
+    {date:'2026-01-03',s:'BWL',   l:'BWL',            t:'Klausur'},
+    {date:'2026-01-20',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-01-27',s:'DVNet', l:'3D / Rewe',      t:'Klausur'},
+    {date:'2026-01-28',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-01-29',s:'JAVA',  l:'Java',           t:'Klausur'},
+    {date:'2026-02-02',s:'JAVA',  l:'AP Java',        t:'AP'},
+    {date:'2026-02-04',s:'BWL',   l:'AB BWL',         t:'AP'},
+    {date:'2026-02-06',s:'Rewe',  l:'AP Rewe',        t:'AP'},
+    {date:'2026-03-16',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-04-16',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-04-20',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
+    {date:'2026-05-06',s:'KI',    l:'MS Project',     t:'Klausur'},
+    {date:'2026-05-07',s:'WEB',   l:'Webentwicklung', t:'Klausur'},
+    {date:'2026-05-12',s:'Linux', l:'Linux',          t:'Klausur'},
+    {date:'2026-05-21',s:'Python',l:'Python',         t:'Klausur'},
+    {date:'2026-05-22',s:'SQL',   l:'SQL',            t:'Klausur'},
+    {date:'2026-06-08',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
+    {date:'2026-06-10',s:'Orga',  l:'Organisation',   t:'Klausur'},
+    {date:'2026-06-12',s:'KI',    l:'KI',             t:'Klausur'},
+    {date:'2026-06-23',s:'KI',    l:'MS Project',     t:'Klausur'},
+    {date:'2026-07-10',s:'E',     l:'Zeugnis 🎓',     t:'Zeugnis'},
+  ],
+  freko1:null,freko2:null,mr:null,
+};
+
+const FERIEN=[
+  {name:'Faschingsferien',s:'2026-02-16',e:'2026-02-20'},
+  {name:'Osterferien',s:'2026-03-30',e:'2026-04-11'},
+  {name:'Pfingstferien',s:'2026-05-30',e:'2026-06-13'},
+  {name:'Sommerferien',s:'2026-07-30',e:'2026-09-14'},
+];
+
+const p2=n=>String(n).padStart(2,'0');
+const DWS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const DWK=['So','Mo','Di','Mi','Do','Fr','Sa'];
+const MN=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MNS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+function parseD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function todayMid(){const d=new Date();d.setHours(0,0,0,0);return d}
+function daysUntil(s){return Math.round((parseD(s)-todayMid())/86400000)}
+function fmtDateShort(d){return DWK[d.getDay()]+' '+p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'}
+
+let isDark=localStorage.getItem('sp-theme')==='dark';
+let selCls=localStorage.getItem('sp-class')||'info1';
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const ic=document.getElementById('themeIcon');
+  if(ic)ic.setAttribute('data-lucide',isDark?'sun':'moon');
+  if(window.lucide)lucide.createIcons();
+}
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  isDark=!isDark;localStorage.setItem('sp-theme',isDark?'dark':'light');applyTheme();
+});
+
+document.getElementById('classTabs').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-cls]');if(!btn)return;
+  selCls=btn.dataset.cls;localStorage.setItem('sp-class',selCls);
+  document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.cls===selCls));
+  renderAll();
+});
+document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.cls===selCls));
+
+function renderNex(){
+  const exams=EXAMS[selCls];
+  const el=document.getElementById('nexBody');
+  if(!exams){el.innerHTML='<div class="tod-empty">Kein Plan für diese Klasse</div>';return;}
+  const today=todayMid();
+  let next=null;
+  for(const ex of exams){const d=parseD(ex.date);if(d>=today){next={...ex,days:daysUntil(ex.date)};break;}}
+  if(!next){el.innerHTML='<div class="tod-empty">Keine weiteren Klausuren</div>';return;}
+  const m=sm(next.s);
+  const d=parseD(next.date);
+  let bc,bt;
+  if(next.t==='Zeugnis'){bc='nb-ap';bt='Zeugnis';}
+  else if(next.t==='AP'){bc='nb-ap';bt='AP';}
+  else if(next.days===0){bc='nb-today';bt='HEUTE';}
+  else if(next.days===1){bc='nb-soon';bt='Morgen';}
+  else if(next.days<=4){bc='nb-soon';bt='in '+next.days+' Tagen';}
+  else{bc='nb-norm';bt='in '+next.days+' Tagen';}
+  el.innerHTML=`<div class="nex-body"><div class="nex-ey">${next.t}</div><div class="nex-subj ${m.c}" style="color:var(--sc)">${next.l}</div><div class="nex-date">${DWS[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]} ${d.getFullYear()}</div><div class="nex-badge ${bc}">${bt}</div></div>`;
+}
+
+function renderExams(){
+  const exams=EXAMS[selCls];
+  const el=document.getElementById('examList');
+  if(!exams){el.innerHTML='<div class="ex-empty">Klausurenplan für diese Klasse nicht verfügbar</div>';return;}
+  const today=todayMid();
+  let html='',curM='',feriIdx=0,prevD=null;
+  for(const ex of exams){
+    const d=parseD(ex.date);
+    const mo=MN[d.getMonth()]+' '+d.getFullYear();
+    const days=daysUntil(ex.date);
+    const past=d<today;
+    const m=sm(ex.s);
+    if(mo!==curM){curM=mo;html+=`<div class="ex-mhdr">${mo}</div>`;}
+    while(feriIdx<FERIEN.length){
+      const fs=parseD(FERIEN[feriIdx].s);
+      if(fs>d)break;
+      if(!prevD||fs>prevD){
+        const fe=parseD(FERIEN[feriIdx].e);
+        html+=`<div class="ex-ferien">☀ ${FERIEN[feriIdx].name} · bis ${fe.getDate()}. ${MNS[fe.getMonth()]}</div>`;
+      }
+      feriIdx++;
+    }
+    prevD=d;
+    let bc,bt;
+    if(ex.t==='Zeugnis'){bc='eb-zg';bt='Zeugnis';}
+    else if(ex.t==='AP'){bc='eb-ap';bt='AP';}
+    else if(past){bc='eb-fut';bt='vorbei';}
+    else if(days===0){bc='eb-today';bt='HEUTE';}
+    else if(days<=3){bc='eb-soon';bt=days===1?'morgen':'in '+days+' T.';}
+    else{bc='eb-fut';bt='in '+days+' T.';}
+    html+=`<div class="ex-row${past?' past':''} ${m.c}"><div class="ex-dot"></div><div class="ex-date">${fmtDateShort(d)}</div><div class="ex-subj">${ex.l}</div><div class="ex-badge ${bc}">${bt}</div></div>`;
+  }
+  el.innerHTML=html;
+}
+
+function renderAll(){renderNex();renderExams();}
+applyTheme();
+renderAll();
+lucide.createIcons();
+</script>
+</body>
+</html>

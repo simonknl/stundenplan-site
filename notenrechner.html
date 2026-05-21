@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notenrechner · IFB</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --bg:#f0f4f9;--surface:#fff;--surface-2:#f8fafc;--border:#e2e8f0;--border-s:#f0f4f8;
+  --text:#0f172a;--text-2:#334155;--muted:#64748b;--subtle:#94a3b8;--blue:#3b82f6;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+  --r:10px;--r-lg:14px;
+}
+[data-theme="dark"] {
+  --bg:#0d1117;--surface:#161b27;--surface-2:#1c2333;--border:#2d3748;--border-s:#1e2a3a;
+  --text:#e2e8f0;--text-2:#a0aec0;--muted:#718096;--subtle:#4a5568;--blue:#63b3ed;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 4px 12px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-size:14px;line-height:1.5;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--blue);text-decoration:none}
+.page{max-width:820px;margin:0 auto;padding:16px}
+@media(min-width:768px){.page{padding:24px 32px}}
+
+/* header */
+.header{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.header-title{flex:1;min-width:140px}
+.header-title h1{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.header-title .sub{font-size:12px;color:var(--muted);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:6px}
+.nav-links{display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;box-shadow:var(--shadow-sm)}
+.nav-link{padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;transition:background .12s,color .12s;white-space:nowrap}
+.nav-link:hover{background:var(--surface-2);color:var(--text);text-decoration:none}
+.nav-link.active{background:var(--blue);color:#fff}
+.icon-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:background .15s,color .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+
+/* mode tabs */
+.mode-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:4px;box-shadow:var(--shadow-sm)}
+.mt-btn{flex:1;padding:7px 8px;border:none;border-radius:var(--r);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s;font-family:inherit;white-space:nowrap}
+.mt-btn:hover{background:var(--surface-2);color:var(--text)}
+.mt-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(59,130,246,.25)}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:12px}
+.card-head{padding:12px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-head h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);flex:1}
+.card-head .chi{color:var(--subtle);flex-shrink:0}
+
+/* preset bar */
+.preset-bar{display:flex;align-items:center;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.preset-lbl{font-size:11px;font-weight:600;color:var(--subtle);white-space:nowrap;margin-right:2px}
+.preset-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .12s,border-color .12s,color .12s;font-family:inherit}
+.preset-btn:hover{background:var(--border-s);border-color:var(--blue);color:var(--text)}
+.pw{font-size:10px;font-weight:700;color:var(--subtle);background:var(--border);border-radius:4px;padding:1px 5px}
+
+/* grade table */
+.grade-table{width:100%;border-collapse:collapse}
+.grade-table th{padding:6px 8px 6px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--subtle);text-align:left;border-bottom:1px solid var(--border);background:var(--surface-2)}
+.grade-table th.tc{text-align:center}
+.grade-table th:last-child{width:38px;padding-right:14px;text-align:center}
+.grade-table td{padding:5px 8px 5px 16px;border-bottom:1px solid var(--border-s);vertical-align:middle}
+.grade-table tr:last-child td{border-bottom:none}
+.grade-table tbody tr:hover td{background:var(--surface-2)}
+
+/* inputs */
+.inp{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-size:13px;font-weight:600;color:var(--text);font-family:inherit;width:100%;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--blue)}
+select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
+.inp-name{min-width:100px}
+.inp-w{width:64px;text-align:center}
+.inp-pts{width:64px;text-align:center}
+.inp-grade{width:66px;text-align:center}
+
+/* del button */
+.del-btn{width:27px;height:27px;border:1px solid var(--border);background:transparent;border-radius:6px;cursor:pointer;color:var(--subtle);display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s,border-color .12s;margin:0 auto;flex-shrink:0}
+.del-btn:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626}
+[data-theme="dark"] .del-btn:hover{background:#450a0a;border-color:#7f1d1d;color:#f87171}
+
+/* add row */
+.add-row{padding:8px 14px;border-top:1px solid var(--border-s)}
+.add-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;background:transparent;border:1px dashed var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .12s,border-color .12s,color .12s;font-family:inherit;width:100%}
+.add-btn:hover{background:var(--surface-2);border-color:var(--blue);color:var(--blue)}
+
+/* io bar */
+.io-bar{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--border);flex-wrap:wrap}
+.io-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .12s,color .12s;font-family:inherit}
+.io-btn:hover{background:var(--border);color:var(--text)}
+.io-btn.danger:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+[data-theme="dark"] .io-btn.danger:hover{background:#450a0a;color:#f87171;border-color:#7f1d1d}
+
+/* result card */
+.result-wrap{display:flex;align-items:stretch;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.result-main{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:18px 20px}
+.result-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--subtle);margin-bottom:4px}
+.result-val{font-size:38px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+.result-sub{font-size:12px;color:var(--muted);margin-top:5px}
+.result-tag{display:inline-block;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-top:10px}
+.rc-green{color:#15803d;background:#dcfce7}
+.rc-blue{color:#1d4ed8;background:#dbeafe}
+.rc-yellow{color:#a16207;background:#fef9c3}
+.rc-orange{color:#c2410c;background:#ffedd5}
+.rc-red{color:#b91c1c;background:#fee2e2}
+[data-theme="dark"] .rc-green{color:#4ade80;background:#052e16}
+[data-theme="dark"] .rc-blue{color:#93c5fd;background:#172554}
+[data-theme="dark"] .rc-yellow{color:#fde047;background:#422006}
+[data-theme="dark"] .rc-orange{color:#fb923c;background:#431407}
+[data-theme="dark"] .rc-red{color:#f87171;background:#450a0a}
+
+/* empty state */
+.empty-state{padding:36px 18px;text-align:center}
+.empty-state .es-title{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.empty-state p{font-size:12px;color:var(--subtle)}
+
+/* oberstufe section header */
+.ob-head{padding:9px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ob-head-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--subtle)}
+.ob-badge{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--border);color:var(--muted)}
+
+/* ziel panel */
+.ziel-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.ziel-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ziel-lbl{font-size:13px;color:var(--text-2);flex:1;min-width:180px}
+.ziel-src{font-size:12px;color:var(--muted);padding:8px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;margin-bottom:4px}
+.ziel-result{padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r)}
+.zr-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--subtle);margin-bottom:3px}
+.zr-val{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.zr-sub{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* panel visibility */
+.panel{display:none}
+.panel.active{display:block}
+
+/* points display badge in ob result */
+.pts-result{flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:16px 18px;text-align:center}
+.pts-result-val{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.8px}
+.pts-result-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--subtle);margin-bottom:3px}
+.pts-result-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+@media(max-width:560px){
+  .nav-links{display:none}
+  .mode-tabs{gap:2px}
+  .mt-btn{font-size:12px;padding:6px 4px}
+  .grade-table th,.grade-table td{padding-left:10px}
+  .preset-bar{gap:4px}
+  .preset-btn{font-size:11px;padding:3px 8px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header">
+  <div class="header-title">
+    <h1>Notenrechner</h1>
+    <div class="sub">IFB</div>
+  </div>
+  <div class="header-actions">
+    <nav class="nav-links">
+      <a class="nav-link" href="stundenplan.html">Stundenplan</a>
+      <a class="nav-link" href="klausurenplan.html">Klausurenplan</a>
+      <a class="nav-link active" href="notenrechner.html">Notenrechner</a>
+    </nav>
+    <button class="icon-btn" id="themeBtn" title="Theme wechseln">
+      <i data-lucide="sun" style="width:15px;height:15px" id="themeIcon"></i>
+    </button>
+  </div>
+</div>
+
+<div class="mode-tabs">
+  <button class="mt-btn active" data-mode="rechner">Notenrechner</button>
+  <button class="mt-btn" data-mode="oberstufe">Oberstufe</button>
+  <button class="mt-btn" data-mode="ziel">Zielnotenrechner</button>
+</div>
+
+<!-- ─── PANEL: RECHNER ─────────────────────────────────────────────────────── -->
+<div class="panel active" id="panel-rechner">
+  <div class="card">
+    <div class="card-head">
+      <i data-lucide="list" style="width:14px;height:14px" class="chi"></i>
+      <h2>Noten</h2>
+    </div>
+    <div class="preset-bar">
+      <span class="preset-lbl">Hinzufügen:</span>
+      <button class="preset-btn" onclick="addPreset('Schulaufgabe',2)">Schulaufgabe <span class="pw">2×</span></button>
+      <button class="preset-btn" onclick="addPreset('Ex',1)">Ex <span class="pw">1×</span></button>
+      <button class="preset-btn" onclick="addPreset('Mündlich',1)">Mündlich <span class="pw">1×</span></button>
+      <button class="preset-btn" onclick="addPreset('Kurzarbeit',1.5)">Kurzarbeit <span class="pw">1,5×</span></button>
+      <button class="preset-btn" onclick="addPreset('Referat',1)">Referat <span class="pw">1×</span></button>
+    </div>
+    <table class="grade-table">
+      <thead>
+        <tr>
+          <th>Bezeichnung</th>
+          <th class="tc" style="width:74px">Note</th>
+          <th class="tc" style="width:70px">Gewicht</th>
+          <th style="width:38px"></th>
+        </tr>
+      </thead>
+      <tbody id="gradeBody"></tbody>
+    </table>
+    <div class="add-row">
+      <button class="add-btn" onclick="addEntry()">
+        <i data-lucide="plus" style="width:13px;height:13px"></i>
+        Eintrag hinzufügen
+      </button>
+    </div>
+    <div class="io-bar">
+      <button class="io-btn" onclick="exportJSON()"><i data-lucide="download" style="width:12px;height:12px"></i> Export</button>
+      <button class="io-btn" onclick="importJSON()"><i data-lucide="upload" style="width:12px;height:12px"></i> Import</button>
+      <button class="io-btn danger" style="margin-left:auto" onclick="clearAll()"><i data-lucide="trash-2" style="width:12px;height:12px"></i> Löschen</button>
+    </div>
+  </div>
+  <div id="resultWrap"></div>
+</div>
+
+<!-- ─── PANEL: OBERSTUFE ───────────────────────────────────────────────────── -->
+<div class="panel" id="panel-oberstufe">
+  <div class="card">
+    <div class="ob-head">
+      <span class="ob-head-title">Leistungskurse</span>
+      <span class="ob-badge">2-fach gewichtet</span>
+    </div>
+    <table class="grade-table">
+      <thead>
+        <tr>
+          <th>Fach</th>
+          <th class="tc" style="width:80px">Punkte (0–15)</th>
+          <th style="width:38px"></th>
+        </tr>
+      </thead>
+      <tbody id="lkBody"></tbody>
+    </table>
+    <div class="add-row">
+      <button class="add-btn" onclick="addObEntry('lk')">
+        <i data-lucide="plus" style="width:13px;height:13px"></i>
+        Leistungskurs hinzufügen
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ob-head">
+      <span class="ob-head-title">Grundkurse</span>
+      <span class="ob-badge">1-fach gewichtet</span>
+    </div>
+    <table class="grade-table">
+      <thead>
+        <tr>
+          <th>Fach</th>
+          <th class="tc" style="width:80px">Punkte (0–15)</th>
+          <th style="width:38px"></th>
+        </tr>
+      </thead>
+      <tbody id="gkBody"></tbody>
+    </table>
+    <div class="add-row">
+      <button class="add-btn" onclick="addObEntry('gk')">
+        <i data-lucide="plus" style="width:13px;height:13px"></i>
+        Grundkurs hinzufügen
+      </button>
+    </div>
+  </div>
+  <div id="obResultWrap"></div>
+</div>
+
+<!-- ─── PANEL: ZIEL ────────────────────────────────────────────────────────── -->
+<div class="panel" id="panel-ziel">
+  <div class="card">
+    <div class="card-head">
+      <i data-lucide="target" style="width:14px;height:14px" class="chi"></i>
+      <h2>Zielnotenrechner</h2>
+    </div>
+    <div class="ziel-body">
+      <div id="zielSrc" class="ziel-src">Kein Schnitt berechnet — trage zuerst Noten im Notenrechner ein.</div>
+
+      <div class="ziel-row">
+        <span class="ziel-lbl">Aktueller Schnitt</span>
+        <input type="text" class="inp" style="max-width:90px" id="zielCurAvg" placeholder="z.B. 2,5" oninput="calcZiel()">
+      </div>
+      <div class="ziel-row">
+        <span class="ziel-lbl">Gesamtgewicht bisher</span>
+        <input type="number" class="inp" style="max-width:90px" id="zielTotalW" placeholder="z.B. 6" min="0" step="0.5" oninput="calcZiel()">
+      </div>
+      <div class="ziel-row">
+        <span class="ziel-lbl">Gewünschter Zielschnitt</span>
+        <input type="text" class="inp" style="max-width:90px" id="zielTarget" placeholder="z.B. 2,0" oninput="calcZiel()">
+      </div>
+      <div class="ziel-row">
+        <span class="ziel-lbl">Nächste Note — Gewicht</span>
+        <select class="inp" style="max-width:190px" id="zielNextW" onchange="calcZiel()">
+          <option value="2">Schulaufgabe (2×)</option>
+          <option value="1.5">Kurzarbeit (1,5×)</option>
+          <option value="1" selected>Ex / Mündlich (1×)</option>
+          <option value="0.5">Kleinere Note (0,5×)</option>
+        </select>
+      </div>
+
+      <div id="zielResult"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .page -->
+
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ─── GRADE SYSTEM ─────────────────────────────────────────────────────────────
+const G = {
+  '1+':0.75,'1':1.0,'1-':1.25,
+  '2+':1.75,'2':2.0,'2-':2.25,
+  '3+':2.75,'3':3.0,'3-':3.25,
+  '4+':3.75,'4':4.0,'4-':4.25,
+  '5+':4.75,'5':5.0,'5-':5.25,
+  '6':6.0
+};
+const GKEYS = ['1+','1','1-','2+','2','2-','3+','3','3-','4+','4','4-','5+','5','5-','6'];
+
+function gradeInfo(avg) {
+  if (avg <= 1.5) return { label: 'sehr gut',       cls: 'rc-green'  };
+  if (avg <= 2.5) return { label: 'gut',             cls: 'rc-blue'   };
+  if (avg <= 3.5) return { label: 'befriedigend',    cls: 'rc-yellow' };
+  if (avg <= 4.0) return { label: 'ausreichend',     cls: 'rc-orange' };
+  if (avg <= 5.0) return { label: 'mangelhaft',      cls: 'rc-red'    };
+  return                  { label: 'ungenügend',     cls: 'rc-red'    };
+}
+
+function fmtDE(n, d=2) { return n.toFixed(d).replace('.', ','); }
+function parseDE(s)     { return parseFloat(String(s).replace(',', '.')); }
+function esc(s)         { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let nid = 1;
+let entries  = [];  // {id, name, grade, weight}
+let obLK     = [];  // {id, name, pts}
+let obGK     = [];  // {id, name, pts}
+let isDark   = localStorage.getItem('nr-theme') !== 'light';
+let activeMode = 'rechner';
+
+// ─── CALC ─────────────────────────────────────────────────────────────────────
+function calcAvg(ents) {
+  let sum = 0, tw = 0, cnt = 0;
+  for (const e of ents) {
+    const g = G[e.grade];
+    const w = parseFloat(e.weight);
+    if (g != null && !isNaN(w) && w > 0) { sum += g * w; tw += w; cnt++; }
+  }
+  return tw > 0 ? { avg: sum / tw, tw, cnt } : null;
+}
+
+function calcObAvg() {
+  let sum = 0, tw = 0, cnt = 0;
+  for (const e of obLK) {
+    const p = parseFloat(e.pts);
+    if (!isNaN(p) && p >= 0 && p <= 15) { sum += p * 2; tw += 2; cnt++; }
+  }
+  for (const e of obGK) {
+    const p = parseFloat(e.pts);
+    if (!isNaN(p) && p >= 0 && p <= 15) { sum += p * 1; tw += 1; cnt++; }
+  }
+  return tw > 0 ? { avg: sum / tw, tw, cnt } : null;
+}
+
+function ptsToNote(p) {
+  if (p >= 13) return { n: '1', label: 'sehr gut',    cls: 'rc-green'  };
+  if (p >= 10) return { n: '2', label: 'gut',          cls: 'rc-blue'   };
+  if (p >= 7)  return { n: '3', label: 'befriedigend', cls: 'rc-yellow' };
+  if (p >= 4)  return { n: '4', label: 'ausreichend',  cls: 'rc-orange' };
+  if (p >= 1)  return { n: '5', label: 'mangelhaft',   cls: 'rc-red'    };
+  return              { n: '6', label: 'ungenügend',   cls: 'rc-red'    };
+}
+
+function gradeForTarget(needed) {
+  // highest (worst) grade value still ≤ needed
+  let best = null;
+  for (const [k, v] of Object.entries(G)) {
+    if (v <= needed + 0.001 && (best === null || v > G[best])) best = k;
+  }
+  return best;
+}
+
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+function save() {
+  localStorage.setItem('nr-entries', JSON.stringify(entries));
+  localStorage.setItem('nr-lk', JSON.stringify(obLK));
+  localStorage.setItem('nr-gk', JSON.stringify(obGK));
+}
+
+function load() {
+  try {
+    const e = JSON.parse(localStorage.getItem('nr-entries') || '[]');
+    const lk = JSON.parse(localStorage.getItem('nr-lk') || '[]');
+    const gk = JSON.parse(localStorage.getItem('nr-gk') || '[]');
+    entries = Array.isArray(e)  ? e  : [];
+    obLK    = Array.isArray(lk) ? lk : [];
+    obGK    = Array.isArray(gk) ? gk : [];
+    const ids = [...entries, ...obLK, ...obGK].map(x => x.id || 0);
+    nid = ids.length ? Math.max(...ids) + 1 : 1;
+  } catch { entries = []; obLK = []; obGK = []; }
+}
+
+// ─── GRADE SELECT HTML ────────────────────────────────────────────────────────
+function gradeSelect(val, id) {
+  const opts = GKEYS.map(k => `<option value="${k}"${k===val?' selected':''}>${k}</option>`).join('');
+  return `<select class="inp inp-grade" data-id="${id}" onchange="upd(${id},'grade',this.value)">${opts}</select>`;
+}
+
+// ─── RENDER: RECHNER ──────────────────────────────────────────────────────────
+function renderRechner() {
+  const tb = document.getElementById('gradeBody');
+  if (!entries.length) {
+    tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="es-title">Noch keine Einträge</div><p>Wähle einen Preset oben oder füge manuell eine Note hinzu.</p></div></td></tr>`;
+    document.getElementById('resultWrap').innerHTML = '';
+    return;
+  }
+  tb.innerHTML = entries.map(e => `
+    <tr>
+      <td><input class="inp inp-name" type="text" value="${esc(e.name)}" placeholder="Fach / Bezeichnung" oninput="upd(${e.id},'name',this.value)"></td>
+      <td>${gradeSelect(e.grade, e.id)}</td>
+      <td><input class="inp inp-w" type="number" value="${e.weight}" min="0.5" max="10" step="0.5" onchange="upd(${e.id},'weight',this.value)" oninput="upd(${e.id},'weight',this.value)"></td>
+      <td><button class="del-btn" onclick="removeEntry(${e.id})" title="Löschen"><i data-lucide="x" style="width:11px;height:11px"></i></button></td>
+    </tr>`).join('');
+  lucide.createIcons();
+  renderResult();
+}
+
+function renderResult() {
+  const wrap = document.getElementById('resultWrap');
+  const r = calcAvg(entries);
+  if (!r) { wrap.innerHTML = ''; return; }
+  const info = gradeInfo(r.avg);
+  wrap.innerHTML = `
+    <div class="result-main">
+      <div class="result-label">Gewichteter Schnitt</div>
+      <div class="result-val">${fmtDE(r.avg)}</div>
+      <div class="result-sub">${r.cnt} Eintrag${r.cnt!==1?'e':''} &middot; Gesamtgewicht ${r.tw % 1 === 0 ? r.tw : fmtDE(r.tw)}</div>
+      <div class="result-tag ${info.cls}">${info.label}</div>
+    </div>`;
+}
+
+// ─── RENDER: OBERSTUFE ────────────────────────────────────────────────────────
+function renderObRow(e, type) {
+  return `<tr>
+    <td><input class="inp inp-name" type="text" value="${esc(e.name)}" placeholder="Fach" oninput="updOb(${e.id},'${type}','name',this.value)"></td>
+    <td><input class="inp inp-pts" type="number" value="${e.pts}" min="0" max="15" step="1" onchange="updOb(${e.id},'${type}','pts',this.value)" oninput="updOb(${e.id},'${type}','pts',this.value)"></td>
+    <td><button class="del-btn" onclick="removeOb(${e.id},'${type}')" title="Löschen"><i data-lucide="x" style="width:11px;height:11px"></i></button></td>
+  </tr>`;
+}
+
+function renderOberstufe() {
+  const lb = document.getElementById('lkBody');
+  const gb = document.getElementById('gkBody');
+  lb.innerHTML = obLK.length ? obLK.map(e => renderObRow(e,'lk')).join('') :
+    `<tr><td colspan="3"><div class="empty-state" style="padding:20px 16px"><div class="es-title">Keine Leistungskurse</div></div></td></tr>`;
+  gb.innerHTML = obGK.length ? obGK.map(e => renderObRow(e,'gk')).join('') :
+    `<tr><td colspan="3"><div class="empty-state" style="padding:20px 16px"><div class="es-title">Keine Grundkurse</div></div></td></tr>`;
+  lucide.createIcons();
+  renderObResult();
+}
+
+function renderObResult() {
+  const wrap = document.getElementById('obResultWrap');
+  const r = calcObAvg();
+  if (!r) { wrap.innerHTML = ''; return; }
+  const ni = ptsToNote(r.avg);
+  wrap.innerHTML = `
+    <div class="result-main">
+      <div class="result-label">Gewichteter Schnitt (Punkte)</div>
+      <div class="result-val">${fmtDE(r.avg)}</div>
+      <div class="result-sub">${r.cnt} Kurs${r.cnt!==1?'e':''} &middot; entspricht ca. Note ${ni.n}</div>
+      <div class="result-tag ${ni.cls}">${ni.label}</div>
+    </div>`;
+}
+
+// ─── RENDER: ZIEL ─────────────────────────────────────────────────────────────
+function syncZielFromRechner() {
+  const r = calcAvg(entries);
+  const src = document.getElementById('zielSrc');
+  if (r) {
+    src.textContent = `Aus dem Notenrechner: Schnitt ${fmtDE(r.avg)} · Gesamtgewicht ${r.tw % 1 === 0 ? r.tw : fmtDE(r.tw)} · ${r.cnt} Eintrag${r.cnt!==1?'e':''}`;
+    document.getElementById('zielCurAvg').value = fmtDE(r.avg);
+    document.getElementById('zielTotalW').value  = r.tw;
+  } else {
+    src.textContent = 'Kein Schnitt berechnet — trage zuerst Noten im Notenrechner ein.';
+  }
+  calcZiel();
+}
+
+function calcZiel() {
+  const curAvg    = parseDE(document.getElementById('zielCurAvg').value);
+  const tw        = parseFloat(document.getElementById('zielTotalW').value);
+  const target    = parseDE(document.getElementById('zielTarget').value);
+  const nextW     = parseFloat(document.getElementById('zielNextW').value);
+  const el        = document.getElementById('zielResult');
+
+  if (isNaN(curAvg) || isNaN(tw) || isNaN(target) || isNaN(nextW) || tw < 0 || nextW <= 0) {
+    el.innerHTML = '';
+    return;
+  }
+
+  // needed = (target*(tw+nw) - curAvg*tw) / nw
+  const needed = (target * (tw + nextW) - curAvg * tw) / nextW;
+
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (needed > 6.0) {
+    el.innerHTML = `<div class="ziel-result"><div class="zr-lbl">Ergebnis</div><div class="zr-val" style="color:${dark?'#4ade80':'#15803d'}">Bereits erreicht</div><div class="zr-sub">Jede Note reicht, um den Zielschnitt zu halten.</div></div>`;
+    return;
+  }
+  if (needed < 0.75) {
+    el.innerHTML = `<div class="ziel-result"><div class="zr-lbl">Ergebnis</div><div class="zr-val" style="color:${dark?'#f87171':'#b91c1c'}">Nicht erreichbar</div><div class="zr-sub">Auch eine 1+ reicht nicht aus.</div></div>`;
+    return;
+  }
+
+  const gk = gradeForTarget(needed);
+  if (!gk) { el.innerHTML = ''; return; }
+  const info = gradeInfo(G[gk]);
+  el.innerHTML = `<div class="ziel-result">
+    <div class="zr-lbl">Benötigte Note (mindestens)</div>
+    <div class="zr-val">${gk} <span style="font-size:14px;font-weight:500;opacity:.65">≈ ${fmtDE(needed)}</span></div>
+    <div class="zr-sub">${info.label} &middot; Gewicht ${nextW}×</div>
+  </div>`;
+  // color the grade
+  const vEl = el.querySelector('.zr-val');
+  const colors = {
+    'rc-green': '#15803d', 'rc-blue': '#1d4ed8',
+    'rc-yellow': '#a16207', 'rc-orange': '#c2410c', 'rc-red': '#b91c1c'
+  };
+  const darkColors = {
+    'rc-green': '#4ade80', 'rc-blue': '#93c5fd',
+    'rc-yellow': '#fde047', 'rc-orange': '#fb923c', 'rc-red': '#f87171'
+  };
+  vEl.style.color = (dark ? darkColors : colors)[info.cls] || '';
+}
+
+// ─── ENTRY MUTATIONS ──────────────────────────────────────────────────────────
+function newEntry(name, grade, weight) {
+  return { id: nid++, name: name || '', grade: grade || '2', weight: weight || 1 };
+}
+
+function addEntry(name, grade, weight) {
+  entries.push(newEntry(name, grade, weight));
+  save(); renderRechner();
+}
+
+function addPreset(name, weight) {
+  entries.push(newEntry(name, '2', weight));
+  save(); renderRechner();
+}
+
+function removeEntry(id) {
+  entries = entries.filter(e => e.id !== id);
+  save(); renderRechner();
+}
+
+function upd(id, field, val) {
+  const e = entries.find(e => e.id === id);
+  if (!e) return;
+  if (field === 'weight') { const w = parseFloat(val); if (!isNaN(w) && w > 0) e.weight = w; }
+  else e[field] = val;
+  save(); renderResult();
+  if (activeMode === 'ziel') syncZielFromRechner();
+}
+
+// Oberstufe mutations
+function addObEntry(type) {
+  const e = { id: nid++, name: '', pts: 10 };
+  if (type === 'lk') obLK.push(e); else obGK.push(e);
+  save(); renderOberstufe();
+}
+
+function removeOb(id, type) {
+  if (type === 'lk') obLK = obLK.filter(e => e.id !== id);
+  else               obGK = obGK.filter(e => e.id !== id);
+  save(); renderOberstufe();
+}
+
+function updOb(id, type, field, val) {
+  const arr = type === 'lk' ? obLK : obGK;
+  const e = arr.find(e => e.id === id);
+  if (!e) return;
+  if (field === 'pts') { const p = parseFloat(val); if (!isNaN(p)) e.pts = Math.max(0, Math.min(15, p)); }
+  else e[field] = val;
+  save(); renderObResult();
+}
+
+// ─── CLEAR / EXPORT / IMPORT ──────────────────────────────────────────────────
+function clearAll() {
+  if (!entries.length) return;
+  if (!confirm('Alle Einträge löschen?')) return;
+  entries = []; save(); renderRechner();
+  if (activeMode === 'ziel') syncZielFromRechner();
+}
+
+function exportJSON() {
+  const data = { entries, obLK, obGK, exported: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'noten-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importJSON() {
+  document.getElementById('importFile').click();
+}
+
+function handleImport(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.entries) entries = data.entries;
+      if (data.obLK)    obLK    = data.obLK;
+      if (data.obGK)    obGK    = data.obGK;
+      const ids = [...entries, ...obLK, ...obGK].map(x => x.id || 0);
+      nid = ids.length ? Math.max(...ids) + 1 : 1;
+      save(); renderRechner(); renderOberstufe();
+      if (activeMode === 'ziel') syncZielFromRechner();
+    } catch { alert('Ungültige JSON-Datei.'); }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+// ─── THEME ────────────────────────────────────────────────────────────────────
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  const ic = document.getElementById('themeIcon');
+  if (ic) ic.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  if (window.lucide) lucide.createIcons();
+}
+
+document.getElementById('themeBtn').addEventListener('click', () => {
+  isDark = !isDark;
+  localStorage.setItem('nr-theme', isDark ? 'dark' : 'light');
+  applyTheme();
+  if (activeMode === 'ziel') calcZiel();
+});
+
+// ─── MODE TABS ────────────────────────────────────────────────────────────────
+document.querySelector('.mode-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('[data-mode]');
+  if (!btn) return;
+  activeMode = btn.dataset.mode;
+  document.querySelectorAll('.mt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === activeMode));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + activeMode).classList.add('active');
+  if (activeMode === 'ziel') syncZielFromRechner();
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+load();
+applyTheme();
+renderRechner();
+renderOberstufe();
+lucide.createIcons();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stundenplan · ifb.lol</title>
+<title>Stundenplan · IFB</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -226,25 +226,6 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .ql-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ql-url{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ql-arrow{color:var(--subtle);flex-shrink:0}
-/* comments */
-.cm-list-empty{padding:16px 18px;font-size:13px;color:var(--muted);text-align:center}
-.cm-item{padding:10px 18px;border-top:1px solid var(--border-s);display:flex;flex-direction:column;gap:3px}
-.cm-item:first-child{border-top:none}
-.cm-meta{display:flex;align-items:center;gap:8px}
-.cm-name{font-size:12px;font-weight:700;color:var(--text)}
-.cm-ts{font-size:11px;color:var(--subtle)}
-.cm-del{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--subtle);padding:2px 4px;border-radius:4px;font-size:11px;line-height:1;display:flex;align-items:center}
-.cm-del:hover{background:var(--surface-2);color:#ef4444}
-.cm-text{font-size:13px;color:var(--text-2);white-space:pre-wrap;word-break:break-word}
-.cm-form{padding:12px 18px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-.cm-row{display:flex;gap:8px;align-items:flex-end}
-.cm-input{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:160px;flex-shrink:0;transition:border-color .15s}
-.cm-input:focus{border-color:var(--blue)}
-.cm-area{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;resize:vertical;min-height:60px;flex:1;transition:border-color .15s;line-height:1.5}
-.cm-area:focus{border-color:var(--blue)}
-.cm-btn{background:var(--blue);border:none;border-radius:var(--r);padding:8px 16px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;transition:opacity .15s;flex-shrink:0}
-.cm-btn:hover{opacity:.85}
-.cm-btn:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -256,7 +237,11 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
     <div class="sub" id="headerSub">ab 09.&thinsp;März 2026</div>
   </div>
   <div class="header-actions">
-    <a href="/app" class="back-link"><i data-lucide="layout-dashboard" style="width:13px;height:13px"></i> App</a>
+    <nav style="display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;box-shadow:var(--shadow-sm)">
+      <a href="stundenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:#fff;background:var(--blue);text-decoration:none;white-space:nowrap">Stundenplan</a>
+      <a href="klausurenplan.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Klausurenplan</a>
+      <a href="notenrechner.html" style="padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s">Notenrechner</a>
+    </nav>
     <button class="icon-btn" id="themeBtn" title="Theme"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
     <div class="clock-box">
       <div class="clock-time" id="clockTime">--:--:--</div>
@@ -302,7 +287,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
       <div class="tt-scroll"><div class="tt-grid" id="ttGrid"></div></div>
       <div class="legend" id="legend"></div>
     </div>
-    <div class="card" style="margin-top:16px">
+    <div class="card" id="klausurenplan" style="margin-top:16px">
       <div class="card-head">
         <i data-lucide="book-open" style="width:14px;height:14px" class="chi"></i>
         <h2>Klausurenplan</h2>
@@ -322,21 +307,6 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="card"><div class="card-head"><i data-lucide="link" style="width:14px;height:14px" class="chi"></i><h2>Links</h2></div><div id="quicklinksMob"></div></div>
 </div>
 
-<div class="card" style="margin-top:16px">
-  <div class="card-head">
-    <i data-lucide="message-square" style="width:14px;height:14px" class="chi"></i>
-    <h2>Kommentare</h2>
-    <span id="cmCount" style="margin-left:auto;font-size:11px;color:var(--muted)"></span>
-  </div>
-  <div id="cmList"></div>
-  <div class="cm-form">
-    <div class="cm-row">
-      <input class="cm-input" id="cmName" type="text" placeholder="Name" maxlength="40" autocomplete="off">
-      <textarea class="cm-area" id="cmText" placeholder="Kommentar schreiben…" maxlength="500" rows="2"></textarea>
-      <button class="cm-btn" id="cmSubmit"><i data-lucide="send" style="width:13px;height:13px;vertical-align:-2px"></i> Senden</button>
-    </div>
-  </div>
-</div>
 
 </div>
 <div id="cellTip" class="cell-tip"></div>
@@ -934,7 +904,7 @@ function exportIcal(){
       const m=sm(l.s);
       events.push([
         'BEGIN:VEVENT',
-        `UID:${selCls}-d${di}-p${pi}@ifb.lol`,
+        `UID:${selCls}-d${di}-p${pi}@IFB`,
         `DTSTART:${idt(dd,PERIODS[pi].s)}`,
         `DTEND:${idt(dd,PERIODS[lpi].e)}`,
         `SUMMARY:${m.l}`,
@@ -945,7 +915,7 @@ function exportIcal(){
       ].join('\r\n'));
     }
   }
-  const cal=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ifb.lol//Stundenplan//DE',
+  const cal=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//IFB//Stundenplan//DE',
     `X-WR-CALNAME:${cls.name} · Stundenplan`,'CALSCALE:GREGORIAN',
     ...events,'END:VCALENDAR'].join('\r\n');
   const a=document.createElement('a');
@@ -963,70 +933,10 @@ function updateClock(){
   document.getElementById('clockDate').textContent=fmtDate(n);
 }
 
-// ─── COMMENTS ────────────────────────────────────────────────────────────────
-
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function cmTokKey(id){return 'sp-cm-tok-'+id;}
-function cmGetTok(id){return localStorage.getItem(cmTokKey(id));}
-function cmSetTok(id,t){localStorage.setItem(cmTokKey(id),t);}
-function cmDelTok(id){localStorage.removeItem(cmTokKey(id));}
-function fmtCmDate(s){const d=new Date(s.replace(' ','T'));return p2(d.getDate())+'.'+p2(d.getMonth()+1)+'. '+p2(d.getHours())+':'+p2(d.getMinutes());}
-
-async function renderComments(){
-  const el=document.getElementById('cmList');
-  const cnt=document.getElementById('cmCount');
-  try{
-    const r=await fetch('/api/stundenplan-comments?cls='+selCls);
-    const arr=await r.json();
-    cnt.textContent=arr.length?arr.length+' Kommentar'+(arr.length===1?'':'e'):'';
-    if(!arr.length){el.innerHTML='<div class="cm-list-empty">Noch keine Kommentare</div>';return;}
-    el.innerHTML=arr.map(c=>{
-      const canDel=!!cmGetTok(c.id);
-      return`<div class="cm-item"><div class="cm-meta"><span class="cm-name">${esc(c.name)}</span><span class="cm-ts">${fmtCmDate(c.created_at)}</span>${canDel?`<button class="cm-del" data-id="${c.id}" title="Löschen"><i data-lucide="x" style="width:12px;height:12px"></i></button>`:''}</div><div class="cm-text">${esc(c.text)}</div></div>`;
-    }).join('');
-    lucide.createIcons();
-  }catch(e){console.error('renderComments',e);el.innerHTML='<div class="cm-list-empty">Fehler beim Laden</div>';}
-}
-
-document.getElementById('cmList').addEventListener('click',async e=>{
-  const btn=e.target.closest('[data-id]');
-  if(!btn)return;
-  const id=btn.dataset.id;
-  const tok=cmGetTok(id);
-  if(!tok)return;
-  btn.disabled=true;
-  try{
-    const r=await fetch('/api/stundenplan-comments/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({delete_token:tok})});
-    if(r.ok){cmDelTok(id);renderComments();}
-  }catch{}
-  btn.disabled=false;
-});
-
-document.getElementById('cmSubmit').addEventListener('click',async()=>{
-  const name=document.getElementById('cmName').value.trim();
-  const text=document.getElementById('cmText').value.trim();
-  if(!name||!text)return;
-  const btn=document.getElementById('cmSubmit');
-  btn.disabled=true;
-  try{
-    const r=await fetch('/api/stundenplan-comments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cls:selCls,name,text})});
-    const data=await r.json();
-    if(r.ok){cmSetTok(data.id,data.delete_token);document.getElementById('cmText').value='';localStorage.setItem('sp-cm-name',name);renderComments();}
-    else console.error('POST comment failed',r.status,data);
-  }catch(e){console.error('submit comment',e);}
-  btn.disabled=false;
-});
-
-document.getElementById('cmText').addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))document.getElementById('cmSubmit').click();
-});
-
-const savedName=localStorage.getItem('sp-cm-name');
-if(savedName)document.getElementById('cmName').value=savedName;
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 
-function renderAll(){renderTT();renderLegend();renderNex();renderToday();renderExams();renderQuicklinks();renderComments();}
+function renderAll(){renderTT();renderLegend();renderNex();renderToday();renderExams();renderQuicklinks();}
 
 applyTheme();
 renderAll();

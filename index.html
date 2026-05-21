@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+<title>IFB · Klassenportal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f4f6f9;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  color: #111827;
+}
+
+.page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+  padding: 40px 36px 36px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.brand-mark {
+  width: 48px; height: 48px;
+  background: #2563eb;
+  border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: #fff;
+  letter-spacing: -.5px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -.4px;
+  margin-bottom: 8px;
+}
+
+.sub {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.portal-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 14px 18px;
+  text-decoration: none;
+  transition: background .12s, border-color .12s, box-shadow .12s;
+  gap: 12px;
+}
+
+.portal-link:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  box-shadow: 0 2px 8px rgba(37,99,235,.1);
+}
+
+.portal-link-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.portal-mark {
+  width: 36px; height: 36px;
+  background: #2563eb;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #fff;
+  letter-spacing: -.4px;
+  flex-shrink: 0;
+}
+
+.portal-info-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.portal-info-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d4ed8;
+  letter-spacing: -.2px;
+}
+
+.portal-arrow {
+  color: #3b82f6;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.info-box {
+  margin-top: 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.info-box-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 10px;
+}
+
+.dl-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  padding: 7px 0;
+  gap: 10px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: opacity .12s;
+}
+.dl-link:last-child { border-bottom: none; }
+.dl-link:hover { opacity: .7; }
+
+.dl-link-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.dl-icon {
+  width: 28px; height: 28px;
+  background: #fee2e2;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #dc2626;
+  flex-shrink: 0;
+}
+
+.dl-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.dl-meta {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.dl-arrow {
+  font-size: 13px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+footer {
+  text-align: center;
+  padding: 18px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="card">
+    <div class="brand-mark">KP</div>
+    <h1>Klassenportal</h1>
+    <p class="sub">Stundenplan &amp; Klausurenplan für alle IFB-Klassen:</p>
+
+    <a class="portal-link" href="stundenplan.html">
+      <div class="portal-link-left">
+        <div class="portal-mark">SP</div>
+        <div>
+          <div class="portal-info-label">Stundenplan · alle Klassen</div>
+          <div class="portal-info-name">/stundenplan</div>
+        </div>
+      </div>
+      <span class="portal-arrow">→</span>
+    </a>
+
+    <a class="portal-link" href="klausurenplan.html" style="margin-top:8px">
+      <div class="portal-link-left">
+        <div class="portal-mark">KL</div>
+        <div>
+          <div class="portal-info-label">Klausurenplan · alle Klassen</div>
+          <div class="portal-info-name">/klausurenplan</div>
+        </div>
+      </div>
+      <span class="portal-arrow">→</span>
+    </a>
+
+    <a class="portal-link" href="notenrechner.html" style="margin-top:8px">
+      <div class="portal-link-left">
+        <div class="portal-mark">NR</div>
+        <div>
+          <div class="portal-info-label">Notenrechner · Bayern</div>
+          <div class="portal-info-name">/notenrechner</div>
+        </div>
+      </div>
+      <span class="portal-arrow">→</span>
+    </a>
+
+    <div class="info-box">
+      <div class="info-box-title">Downloads</div>
+      <a class="dl-link" href="Stundenplan_ab_02_03_26.pdf" download>
+        <div class="dl-link-left">
+          <div class="dl-icon">PDF</div>
+          <div>
+            <div class="dl-name">Stundenplan</div>
+            <div class="dl-meta">ab 02.03.26</div>
+          </div>
+        </div>
+        <span class="dl-arrow">↓</span>
+      </a>
+      <a class="dl-link" href="Klausurenplan_ab_06_03_26.pdf" download>
+        <div class="dl-link-left">
+          <div class="dl-icon">PDF</div>
+          <div>
+            <div class="dl-name">Klausurenplan</div>
+            <div class="dl-meta">ab 06.03.26</div>
+          </div>
+        </div>
+        <span class="dl-arrow">↓</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+</footer>
+
+</body>
+</html>
