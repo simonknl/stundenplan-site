@@ -33,7 +33,13 @@
       "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile2 --virtual-time-budget=2000 --screenshot=/tmp/shots/scrolled.png --window-size=1280,1024 \"file:///C:/Users/s.kuehnel/AppData/Local/Temp/shots/scrolltest.html\")",
       "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile3 --virtual-time-budget=4000 --screenshot=/tmp/shots/scrolled2.png --window-size=1280,1024 \"file:///C:/Users/s.kuehnel/AppData/Local/Temp/shots/scrolltest.html\")",
       "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile4 --virtual-time-budget=4000 --screenshot=/tmp/shots/scrolled3.png --window-size=1280,1024 \"http://localhost:8123/__scrolltest.html\")",
-      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile5 --virtual-time-budget=4000 --screenshot=/tmp/shots/scrolled_half.png --window-size=1280,1024 \"http://localhost:8123/__scrolltest.html\")"
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile5 --virtual-time-budget=4000 --screenshot=/tmp/shots/scrolled_half.png --window-size=1280,1024 \"http://localhost:8123/__scrolltest.html\")",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile7 --virtual-time-budget=3000 --screenshot=/tmp/shots/index_dark2.png --window-size=1280,1024 \"http://localhost:8123/__darktest.html\")",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile7 --virtual-time-budget=3000 --screenshot=/tmp/shots/stundenplan_dark.png --window-size=1280,1024 \"http://localhost:8123/stundenplan.html\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/datenschutz.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/cookie-consent.js)",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofile9 --virtual-time-budget=3000 --screenshot=/tmp/shots/klausuren_dark.png --window-size=1280,800 \"http://localhost:8123/__darktest.html\")",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --user-data-dir=/tmp/chromeprofileA --virtual-time-budget=2000 --screenshot=/tmp/shots/noten_dark.png --window-size=1280,900 \"http://localhost:8123/__darktest.html\")"
     ],
     "additionalDirectories": [
       "Z:\\AAA\\IFB\\WEB-Webentwicklung\\stundenplan-site"

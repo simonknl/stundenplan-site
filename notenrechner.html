@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" data-theme="light">
 <head>
+<script>document.documentElement.dataset.theme=localStorage.getItem('sp-theme')==='dark'?'dark':'light';</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1f7a3d">
@@ -521,7 +522,10 @@ lucide.createIcons();
 <footer>
   <div class="footer-inner">
     <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookieSettingsLink">Cookie-Einstellungen</a>
   </div>
 </footer>
+<script src="cookie-consent.js"></script>
 </body>
 </html>
