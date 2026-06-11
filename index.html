@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1f7a3d">
-<title>IFB · Klassenportal (Prototyp)</title>
+<title>IFB · Klassenportal</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="style.css">
-<style>
-.icon-btn[data-theme-icon]{font-size:15px;line-height:1}
-</style>
+<script src="scroll-header.js"></script>
 </head>
 <body>
 
@@ -27,7 +26,7 @@
     <div class="topbar-meta">
       <span id="clockTime">--:--:--</span>
       <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">GitHub</a>
-      <button class="icon-btn" id="themeBtn" title="Theme wechseln" data-theme-icon>🌙</button>
+      <button class="icon-btn" id="themeBtn" title="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
     </div>
   </div>
 </div>
@@ -56,19 +55,19 @@
 <div class="tiles">
   <div class="tile-grid">
     <a class="tile" href="stundenplan.html">
-      <div class="tile-icon">SP</div>
+      <div class="tile-icon"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i></div>
       <div class="tile-name">Dashboard</div>
       <div class="tile-desc">Wochenplan, aktuelle Stunde &amp; nächste Klausur auf einen Blick.</div>
       <div class="tile-go">Öffnen →</div>
     </a>
     <a class="tile" href="klausurenplan.html">
-      <div class="tile-icon">KL</div>
+      <div class="tile-icon"><i data-lucide="alarm-clock" style="width:20px;height:20px"></i></div>
       <div class="tile-name">Klausurenplan</div>
       <div class="tile-desc">Alle Klausur- und Prüfungstermine, sortiert nach Datum.</div>
       <div class="tile-go">Öffnen →</div>
     </a>
     <a class="tile" href="notenrechner.html">
-      <div class="tile-icon">NR</div>
+      <div class="tile-icon"><i data-lucide="calculator" style="width:20px;height:20px"></i></div>
       <div class="tile-name">Notenrechner</div>
       <div class="tile-desc">Noten erfassen, gewichten und den Schnitt berechnen.</div>
       <div class="tile-go">Öffnen →</div>
@@ -83,7 +82,7 @@
   </div>
   <div class="dl-grid">
     <a class="dl-item" href="Stundenplan_ab_02_03_26.pdf" download>
-      <div class="dl-icon">PDF</div>
+      <div class="dl-icon"><i data-lucide="file-text" style="width:16px;height:16px"></i></div>
       <div class="dl-text">
         <div class="dl-name">Dashboard / Stundenplan</div>
         <div class="dl-meta">ab 02.03.26</div>
@@ -91,7 +90,7 @@
       <div class="dl-arrow">↓</div>
     </a>
     <a class="dl-item" href="Klausurenplan_ab_06_03_26.pdf" download>
-      <div class="dl-icon">PDF</div>
+      <div class="dl-icon"><i data-lucide="file-text" style="width:16px;height:16px"></i></div>
       <div class="dl-text">
         <div class="dl-name">Klausurenplan</div>
         <div class="dl-meta">ab 06.03.26</div>
@@ -119,12 +118,15 @@ tick();setInterval(tick,1000);
 let isDark=localStorage.getItem('sp-theme')==='dark';
 function applyTheme(){
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  document.getElementById('themeBtn').textContent=isDark?'☀':'🌙';
+  const ic=document.getElementById('themeIcon');
+  if(ic)ic.setAttribute('data-lucide',isDark?'sun':'moon');
+  if(window.lucide)lucide.createIcons();
 }
 document.getElementById('themeBtn').addEventListener('click',()=>{
   isDark=!isDark;localStorage.setItem('sp-theme',isDark?'dark':'light');applyTheme();
 });
 applyTheme();
+lucide.createIcons();
 </script>
 </body>
 </html>
