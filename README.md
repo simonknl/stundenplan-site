@@ -32,13 +32,13 @@ Der erweiterte Notenrechner mit den folgenden Funktionen:
   - Kurzarbeit (1,5× gewichtet)
   - Examen, Mündlich, Referat (1× gewichtet)
 
-#### Notenschlüssel (Realschule)
-- 92-100% = Note 1 (sehr gut)
-- 81-91% = Note 2 (gut)
-- 67-80% = Note 3 (befriedigend)
-- 50-66% = Note 4 (ausreichend)
-- 30-49% = Note 5 (mangelhaft)
-- <30% = Note 6 (ungenügend)
+#### Notenstufen
+- 1,0-1,5 = sehr gut
+- 1,6-2,5 = gut
+- 2,6-3,5 = befriedigend
+- 3,6-4,5 = ausreichend
+- 4,6-5,5 = mangelhaft
+- 5,6-6,0 = ungenügend
 
 #### Export & Import
 - **CSV Export** - Pro Fach als Tabellendatei (z.B. für Excel)
@@ -99,9 +99,12 @@ stundenplan-site/
 ├── stundenplan.html     # Stundenplan-Seite
 ├── klausurenplan.html   # Klausurenplan-Seite
 ├── notenrechner.html    # Notenrechner (Hauptfeature)
+├── style.css            # Gemeinsames Stylesheet
+├── data.js              # Gemeinsame Daten (Klassen, Fächer, Klausurtermine)
 ├── favicon.svg          # Website-Icon
 ├── README.md            # Diese Datei
-└── PDF-Dateien          # Stundenplan und Klausurenplan als PDF
+├── PDF-Dateien          # Stundenplan und Klausurenplan als PDF
+└── legacy/              # Vorherige Version der Seite (Archiv)
 ```
 
 ## Features im Detail

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1f7a3d">
+<title>IFB · Klassenportal (Prototyp)</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.icon-btn[data-theme-icon]{font-size:15px;line-height:1}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">IFB</div>
+      <div class="brand-text">
+        <strong>Klassenportal</strong>
+        <span>IFB Rosenheim</span>
+      </div>
+    </a>
+    <div class="topbar-meta">
+      <span id="clockTime">--:--:--</span>
+      <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">GitHub</a>
+      <button class="icon-btn" id="themeBtn" title="Theme wechseln" data-theme-icon>🌙</button>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-inner">
+    <a class="active" href="index.html">Startseite</a>
+    <a href="stundenplan.html">Dashboard</a>
+    <a href="klausurenplan.html">Klausurenplan</a>
+    <a href="notenrechner.html">Notenrechner</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Alle Klassen · Info1 · Info2 · Freko1 · Freko2 · MR</div>
+    <h1>Dein Stundenplan, Klausurtermine &amp; Noten - an einem Ort.</h1>
+    <p>Das Klassenportal bündelt Wochenplan, Klausurenplan und einen Notenrechner für alle IFB-Klassen. Direkt im Browser, ohne Anmeldung.</p>
+    <div class="hero-actions">
+      <a class="btn btn-light" href="stundenplan.html">Zum Dashboard</a>
+      <a class="btn btn-outline" href="klausurenplan.html">Klausurenplan ansehen</a>
+    </div>
+  </div>
+</div>
+
+<div class="tiles">
+  <div class="tile-grid">
+    <a class="tile" href="stundenplan.html">
+      <div class="tile-icon">SP</div>
+      <div class="tile-name">Dashboard</div>
+      <div class="tile-desc">Wochenplan, aktuelle Stunde &amp; nächste Klausur auf einen Blick.</div>
+      <div class="tile-go">Öffnen →</div>
+    </a>
+    <a class="tile" href="klausurenplan.html">
+      <div class="tile-icon">KL</div>
+      <div class="tile-name">Klausurenplan</div>
+      <div class="tile-desc">Alle Klausur- und Prüfungstermine, sortiert nach Datum.</div>
+      <div class="tile-go">Öffnen →</div>
+    </a>
+    <a class="tile" href="notenrechner.html">
+      <div class="tile-icon">NR</div>
+      <div class="tile-name">Notenrechner</div>
+      <div class="tile-desc">Noten erfassen, gewichten und den Schnitt berechnen.</div>
+      <div class="tile-go">Öffnen →</div>
+    </a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <h2>Downloads</h2>
+    <div class="line"></div>
+  </div>
+  <div class="dl-grid">
+    <a class="dl-item" href="Stundenplan_ab_02_03_26.pdf" download>
+      <div class="dl-icon">PDF</div>
+      <div class="dl-text">
+        <div class="dl-name">Dashboard / Stundenplan</div>
+        <div class="dl-meta">ab 02.03.26</div>
+      </div>
+      <div class="dl-arrow">↓</div>
+    </a>
+    <a class="dl-item" href="Klausurenplan_ab_06_03_26.pdf" download>
+      <div class="dl-icon">PDF</div>
+      <div class="dl-text">
+        <div class="dl-name">Klausurenplan</div>
+        <div class="dl-meta">ab 06.03.26</div>
+      </div>
+      <div class="dl-arrow">↓</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
+    <a href="legacy/index.html">Alte Version</a>
+  </div>
+</footer>
+
+<script>
+const p2=n=>String(n).padStart(2,'0');
+function tick(){
+  const d=new Date();
+  document.getElementById('clockTime').textContent=p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds());
+}
+tick();setInterval(tick,1000);
+
+let isDark=localStorage.getItem('sp-theme')==='dark';
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('themeBtn').textContent=isDark?'☀':'🌙';
+}
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  isDark=!isDark;localStorage.setItem('sp-theme',isDark?'dark':'light');applyTheme();
+});
+applyTheme();
+</script>
+</body>
+</html>

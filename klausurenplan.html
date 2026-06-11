@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1f7a3d">
+<title>Klausurenplan · IFB Klassenportal</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">IFB</div>
+      <div class="brand-text">
+        <strong>Klassenportal</strong>
+        <span>IFB Rosenheim</span>
+      </div>
+    </a>
+    <div class="topbar-meta">
+      <span id="clockTime">--:--:--</span>
+      <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">GitHub</a>
+      <button class="icon-btn" id="themeBtn" title="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-inner">
+    <a href="index.html">Startseite</a>
+    <a href="stundenplan.html">Dashboard</a>
+    <a class="active" href="klausurenplan.html">Klausurenplan</a>
+    <a href="notenrechner.html">Notenrechner</a>
+  </div>
+</div>
+
+<div class="page narrow">
+
+<div class="page-header">
+  <div class="page-header-title">
+    <h1>Klausurenplan</h1>
+    <div class="sub">IFB Rosenheim</div>
+  </div>
+</div>
+
+<div class="class-tabs" id="classTabs">
+  <button class="ct-btn active" data-cls="info1">Info 1</button>
+  <button class="ct-btn" data-cls="info2">Info 2</button>
+  <button class="ct-btn" data-cls="freko1">Freko 1</button>
+  <button class="ct-btn" data-cls="freko2">Freko 2</button>
+  <button class="ct-btn" data-cls="mr">MR</button>
+</div>
+
+<div class="layout kp">
+  <div class="main-col">
+    <div class="card">
+      <div class="card-head">
+        <i data-lucide="book-open" style="width:14px;height:14px" class="chi"></i>
+        <h2>Klausurenplan</h2>
+      </div>
+      <div id="examList"></div>
+    </div>
+  </div>
+  <div class="side-col">
+    <div class="card">
+      <div class="card-head"><i data-lucide="alarm-clock" style="width:14px;height:14px" class="chi"></i><h2>Nächste Klausur</h2></div>
+      <div id="nexBody"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="data.js"></script>
+<script>
+const TEACHERS = {
+  info1:{JAVA:'Zeit',Linux:'Ober',E:'Bon',BWL:'Breth',Rewe:'Breth',Orga:'Breth',Acc:'Breth',DVHard:'Ber',DVNet:'Ber',WEB:'Wink',KI:'Wink',Python:'Wink',Exc:'Berndt',Ma:'–',SQL:'–'},
+  info2:{JAVA:'Zeit',Linux:'Ober',E:'Bon',BWL:'Breth',Rewe:'Breth',Orga:'Breth',DVNet:'Ber',WEB:'Wink',KI:'Wink',Python:'Wink',SQL:'–'},
+};
+
+const p2=n=>String(n).padStart(2,'0');
+const DWS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const DWK=['So','Mo','Di','Mi','Do','Fr','Sa'];
+const MN=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MNS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+function parseD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function todayMid(){const d=new Date();d.setHours(0,0,0,0);return d}
+function daysUntil(s){return Math.round((parseD(s)-todayMid())/86400000)}
+function fmtDateShort(d){return p2(d.getDate())+'. '+MNS[d.getMonth()]}
+function fmtDateDay(d){return DWS[d.getDay()]}
+
+let isDark=localStorage.getItem('sp-theme')==='dark';
+let selCls=localStorage.getItem('sp-class')||'info1';
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const ic=document.getElementById('themeIcon');
+  if(ic)ic.setAttribute('data-lucide',isDark?'sun':'moon');
+  if(window.lucide)lucide.createIcons();
+}
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  isDark=!isDark;localStorage.setItem('sp-theme',isDark?'dark':'light');applyTheme();
+});
+
+document.getElementById('classTabs').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-cls]');if(!btn)return;
+  selCls=btn.dataset.cls;localStorage.setItem('sp-class',selCls);
+  document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.cls===selCls));
+  renderAll();
+});
+document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.cls===selCls));
+
+function renderNex(){
+  const exams=EXAMS[selCls];
+  const el=document.getElementById('nexBody');
+  if(!exams){el.innerHTML='<div class="tod-empty">Kein Plan für diese Klasse</div>';return;}
+  const today=todayMid();
+  let next=null;
+  for(const ex of exams){const d=parseD(ex.date);if(d>=today){next={...ex,days:daysUntil(ex.date)};break;}}
+  if(!next){el.innerHTML='<div class="tod-empty">Keine weiteren Klausuren</div>';return;}
+  const m=sm(next.s);
+  const d=parseD(next.date);
+  let bc,bt;
+  if(next.t==='Zeugnis'){bc='nb-ap';bt='Zeugnis';}
+  else if(next.t==='AP'){bc='nb-ap';bt='AP';}
+  else if(next.days===0){bc='nb-today';bt='HEUTE';}
+  else if(next.days===1){bc='nb-soon';bt='Morgen';}
+  else if(next.days<=4){bc='nb-soon';bt='in '+next.days+' Tagen';}
+  else{bc='nb-norm';bt='in '+next.days+' Tagen';}
+  const fullDate=`${DWS[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]} ${d.getFullYear()}`;
+  const countdown=next.days===0?'Heute':next.days===1?'Morgen':'in '+next.days+' Tagen';
+  el.innerHTML=`<div class="nex-body"><div class="nex-ey">${next.t==='AP'?'Abschlussprüfung':next.t}</div><div class="nex-subj ${m.c}" style="color:var(--sc)">${next.l}</div><div class="nex-date">${fullDate}</div><div style="display:flex;align-items:center;gap:8px;margin-top:9px"><div class="nex-badge ${bc}" style="margin:0">${countdown}</div></div></div>`;
+}
+
+function renderExams(){
+  const exams=EXAMS[selCls];
+  const el=document.getElementById('examList');
+  if(!exams){el.innerHTML='<div class="ex-empty">Klausurenplan für diese Klasse nicht verfügbar</div>';return;}
+  const today=todayMid();
+  let html='',curM='',feriIdx=0,prevD=null;
+  for(const ex of exams){
+    const d=parseD(ex.date);
+    const mo=MN[d.getMonth()]+' '+d.getFullYear();
+    const days=daysUntil(ex.date);
+    const past=d<today;
+    const m=sm(ex.s);
+    if(mo!==curM){curM=mo;html+=`<div class="ex-mhdr">${mo}</div>`;}
+    while(feriIdx<FERIEN.length){
+      const fs=parseD(FERIEN[feriIdx].s);
+      if(fs>d)break;
+      if(!prevD||fs>prevD){
+        const fe=parseD(FERIEN[feriIdx].e);
+        html+=`<div class="ex-ferien">☀ ${FERIEN[feriIdx].name} · bis ${fe.getDate()}. ${MNS[fe.getMonth()]}</div>`;
+      }
+      feriIdx++;
+    }
+    prevD=d;
+    let bc,bt;
+    if(ex.t==='Zeugnis'){bc='eb-zg';bt='Zeugnis';}
+    else if(ex.t==='AP'){bc='eb-ap';bt='AP';}
+    else if(past){bc='eb-fut';bt='vorbei';}
+    else if(days===0){bc='eb-today';bt='HEUTE';}
+    else if(days<=3){bc='eb-soon';bt=days===1?'morgen':'in '+days+' T.';}
+    else{bc='eb-fut';bt='in '+days+' T.';}
+    const typLbl = ex.t === 'Klausur' ? 'Klausur' : ex.t === 'AP' ? 'Abschlussprüfung' : ex.t;
+    html+=`<div class="ex-row${past?' past':''} ${m.c}" data-s="${ex.s}" data-date="${ex.date}"><div class="ex-dot"></div><div class="ex-date"><span class="ex-date-day">${fmtDateDay(d)}</span>${fmtDateShort(d)}</div><div class="ex-subj">${ex.l}</div><div class="ex-type">${typLbl}</div><div class="ex-badge ${bc}">${bt}</div></div>`;
+  }
+  el.innerHTML=html;
+}
+
+function renderAll(){renderNex();renderExams();}
+
+// ─── TOOLTIP + HIGHLIGHT (wie Stundenplan) ───────────────────────────────────
+let activeSubj = null;
+
+function highlightSubj(s) {
+  document.querySelectorAll('.ex-row').forEach(r => {
+    if (r.dataset.s === s) r.classList.add('subj-hi');
+    else r.classList.add('subj-dim');
+  });
+}
+function clearHighlight() {
+  activeSubj = null;
+  document.querySelectorAll('.ex-row').forEach(r => r.classList.remove('subj-hi','subj-dim'));
+}
+function hideTip() { document.getElementById('examTip').classList.remove('vis'); }
+
+function showTip(row, subj, date) {
+  const exams = EXAMS[selCls] || [];
+  const m = sm(subj);
+  const teacher = (TEACHERS[selCls] || {})[subj] || '–';
+  const today = todayMid();
+  const subjExams = exams.filter(e => e.s === subj);
+
+  let itemsHtml = '';
+  for (const ex of subjExams) {
+    const d = parseD(ex.date);
+    const days = daysUntil(ex.date);
+    const past = d < today;
+    const isCur = ex.date === date;
+    let bc, bt;
+    if (ex.t === 'AP')           { bc = 'eb-ap';    bt = 'AP'; }
+    else if (ex.t === 'Zeugnis') { bc = 'eb-zg';    bt = 'Zeugnis'; }
+    else if (past)               { bc = 'eb-fut';   bt = 'vorbei'; }
+    else if (days === 0)         { bc = 'eb-today'; bt = 'HEUTE'; }
+    else if (days <= 3)          { bc = 'eb-soon';  bt = days===1?'morgen':'in '+days+' T.'; }
+    else                         { bc = 'eb-fut';   bt = 'in '+days+' T.'; }
+    itemsHtml += `<div class="etp-item${past?' is-past':''}${isCur?' is-cur':''}"><span class="etp-idate">${DWK[d.getDay()]} ${fmtDateShort(d)}</span><span class="etp-ilbl">${ex.l}</span><span class="etp-ibadge ${bc}">${bt}</span></div>`;
+  }
+
+  const tip = document.getElementById('examTip');
+  tip.innerHTML = `<div class="etp-head"><div class="etp-name ${m.c}" style="color:var(--sc)">${m.l}</div><div class="etp-row">Lehrer · ${teacher}</div><div class="etp-row">Zeit · 08:00 Uhr</div></div><hr class="etp-sep">${itemsHtml}`;
+
+  const rect = row.getBoundingClientRect();
+  let left = rect.right + 8, top = rect.top;
+  if (left + 268 > window.innerWidth - 10) left = rect.left - 276;
+  if (left < 8) left = 8;
+  if (top + 400 > window.innerHeight - 10) top = window.innerHeight - 408;
+  if (top < 8) top = 8;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.classList.add('vis');
+}
+
+document.getElementById('examList').addEventListener('click', e => {
+  const row = e.target.closest('.ex-row');
+  if (!row) { clearHighlight(); hideTip(); return; }
+  const subj = row.dataset.s;
+  if (subj === activeSubj) { clearHighlight(); hideTip(); return; }
+  clearHighlight();
+  activeSubj = subj;
+  highlightSubj(subj);
+  showTip(row, subj, row.dataset.date);
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#examList') && !e.target.closest('#examTip')) {
+    clearHighlight(); hideTip();
+  }
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { clearHighlight(); hideTip(); } });
+
+// ─── CLOCK ────────────────────────────────────────────────────────────────────
+function tick(){
+  const d=new Date();
+  document.getElementById('clockTime').textContent=p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds());
+}
+tick();setInterval(tick,1000);
+
+applyTheme();
+renderAll();
+lucide.createIcons();
+</script>
+<div id="examTip"></div>
+<footer>
+  <div class="footer-inner">
+    <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
+  </div>
+</footer>
+</body>
+</html>

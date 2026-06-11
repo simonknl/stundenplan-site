@@ -163,101 +163,12 @@ footer a:hover{color:var(--text)}
 </div>
 
 </div>
+<script src="../data.js"></script>
 <script>
-const CLASSES = [
-  {id:'info1',name:'Info 1'},{id:'info2',name:'Info 2'},
-  {id:'freko1',name:'Freko 1'},{id:'freko2',name:'Freko 2'},{id:'mr',name:'MR'},
-];
-
-const SM = {
-  JAVA:{l:'Java',c:'sc-java'},Linux:{l:'Linux',c:'sc-linux'},Acc:{l:'Access',c:'sc-acc'},
-  BWL:{l:'BWL',c:'sc-bwl'},Rewe:{l:'Rechnungswesen',c:'sc-rewe'},Orga:{l:'Organisation',c:'sc-orga'},
-  E:{l:'Englisch',c:'sc-e'},Ma:{l:'Mathematik',c:'sc-ma'},DVHard:{l:'DV Hardware',c:'sc-dv'},
-  DVNet:{l:'DV Netzwerke',c:'sc-dv'},DVServ:{l:'DV Server',c:'sc-dv'},WEB:{l:'Web-Entwicklung',c:'sc-web'},
-  PuG:{l:'Politik & Ges.',c:'sc-pug'},Python:{l:'Python',c:'sc-py'},Exc:{l:'Excel',c:'sc-exc'},
-  KI:{l:'Künstl. Intell.',c:'sc-ki'},Wima:{l:'Wirtschaftsmath.',c:'sc-wima'},SQL:{l:'SQL',c:'sc-sql'},
-};
-function sm(s){return SM[s]||{l:s,c:'sc-zzz'}}
-
 const TEACHERS = {
   info1:{JAVA:'Zeit',Linux:'Ober',E:'Bon',BWL:'Breth',Rewe:'Breth',Orga:'Breth',Acc:'Breth',DVHard:'Ber',DVNet:'Ber',WEB:'Wink',KI:'Wink',Python:'Wink',Exc:'Berndt',Ma:'–',SQL:'–'},
   info2:{JAVA:'Zeit',Linux:'Ober',E:'Bon',BWL:'Breth',Rewe:'Breth',Orga:'Breth',DVNet:'Ber',WEB:'Wink',KI:'Wink',Python:'Wink',SQL:'–'},
 };
-
-const EXAMS = {
-  info1:[
-    {date:'2026-01-04',s:'Rewe',  l:'Rechnungswesen',t:'Klausur'},
-    {date:'2026-01-05',s:'DVHard',l:'DV Netzwerke',  t:'Klausur'},
-    {date:'2026-01-06',s:'Orga',  l:'Organisation',  t:'Klausur'},
-    {date:'2026-01-13',s:'E',     l:'Englisch',       t:'Klausur'},
-    {date:'2026-01-21',s:'BWL',   l:'BWL',            t:'Klausur'},
-    {date:'2026-01-23',s:'Acc',   l:'Access',         t:'Klausur'},
-    {date:'2026-01-26',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-01-30',s:'Ma',    l:'Mathematik',     t:'Klausur'},
-    {date:'2026-03-10',s:'E',     l:'Englisch',       t:'Klausur'},
-    {date:'2026-03-13',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-03-23',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
-    {date:'2026-03-27',s:'Ma',    l:'Mathematik',     t:'Klausur'},
-    {date:'2026-04-13',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-04-15',s:'BWL',   l:'BWL',            t:'Klausur'},
-    {date:'2026-04-22',s:'Exc',   l:'Excel',          t:'Klausur'},
-    {date:'2026-04-23',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
-    {date:'2026-04-24',s:'Rewe',  l:'Rechnungswesen', t:'Klausur'},
-    {date:'2026-04-28',s:'JAVA',  l:'Java',           t:'Klausur'},
-    {date:'2026-04-29',s:'Orga',  l:'Organisation',   t:'Klausur'},
-    {date:'2026-05-05',s:'E',     l:'Englisch',       t:'Klausur'},
-    {date:'2026-05-07',s:'WEB',   l:'Webentwicklung', t:'Klausur'},
-    {date:'2026-05-13',s:'Acc',   l:'Access',         t:'Klausur'},
-    {date:'2026-05-18',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-05-21',s:'Python',l:'Python',         t:'Klausur'},
-    {date:'2026-06-10',s:'Exc',   l:'Excel',          t:'Klausur'},
-    {date:'2026-06-11',s:'KI',    l:'Künstl. Intell.',t:'Klausur'},
-    {date:'2026-06-15',s:'BWL',   l:'BWL',            t:'Klausur'},
-    {date:'2026-06-17',s:'Acc',   l:'Access',         t:'Klausur'},
-    {date:'2026-06-18',s:'DVHard',l:'DV Hardware',    t:'Klausur'},
-    {date:'2026-06-24',s:'Rewe',  l:'Rechnungswesen', t:'Klausur'},
-    {date:'2026-06-26',s:'Ma',    l:'Mathematik',     t:'Klausur'},
-    {date:'2026-06-29',s:'Orga',  l:'Organisation',   t:'Klausur'},
-    {date:'2026-06-30',s:'JAVA',  l:'Java',           t:'Klausur'},
-    {date:'2026-07-01',s:'Orga',  l:'AP Organisation',t:'AP'},
-    {date:'2026-07-03',s:'WEB',   l:'AB Webentwicklung',t:'AP'},
-    {date:'2026-07-06',s:'Python',l:'AP Python',      t:'AP'},
-    {date:'2026-07-08',s:'SQL',   l:'AP SQL',         t:'AP'},
-    {date:'2026-07-10',s:'E',     l:'Zeugnis 🎓',     t:'Zeugnis'},
-  ],
-  info2:[
-    {date:'2026-01-02',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
-    {date:'2026-01-03',s:'BWL',   l:'BWL',            t:'Klausur'},
-    {date:'2026-01-20',s:'Orga',  l:'Organisation',   t:'Klausur'},
-    {date:'2026-01-27',s:'DVNet', l:'3D / Rewe',      t:'Klausur'},
-    {date:'2026-01-28',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-01-29',s:'JAVA',  l:'Java',           t:'Klausur'},
-    {date:'2026-02-02',s:'JAVA',  l:'AP Java',        t:'AP'},
-    {date:'2026-02-04',s:'BWL',   l:'AB BWL',         t:'AP'},
-    {date:'2026-02-06',s:'Rewe',  l:'AP Rewe',        t:'AP'},
-    {date:'2026-03-16',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-04-16',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-04-20',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
-    {date:'2026-05-06',s:'KI',    l:'MS Project',     t:'Klausur'},
-    {date:'2026-05-07',s:'WEB',   l:'Webentwicklung', t:'Klausur'},
-    {date:'2026-05-12',s:'Linux', l:'Linux',          t:'Klausur'},
-    {date:'2026-05-21',s:'Python',l:'Python',         t:'Klausur'},
-    {date:'2026-05-22',s:'SQL',   l:'SQL',            t:'Klausur'},
-    {date:'2026-06-08',s:'DVNet', l:'DV Netzwerke',   t:'Klausur'},
-    {date:'2026-06-10',s:'Orga',  l:'Organisation',   t:'Klausur'},
-    {date:'2026-06-12',s:'KI',    l:'KI',             t:'Klausur'},
-    {date:'2026-06-23',s:'KI',    l:'MS Project',     t:'Klausur'},
-    {date:'2026-07-10',s:'E',     l:'Zeugnis 🎓',     t:'Zeugnis'},
-  ],
-  freko1:null,freko2:null,mr:null,
-};
-
-const FERIEN=[
-  {name:'Faschingsferien',s:'2026-02-16',e:'2026-02-20'},
-  {name:'Osterferien',s:'2026-03-30',e:'2026-04-11'},
-  {name:'Pfingstferien',s:'2026-05-30',e:'2026-06-13'},
-  {name:'Sommerferien',s:'2026-07-30',e:'2026-09-14'},
-];
 
 const p2=n=>String(n).padStart(2,'0');
 const DWS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];

@@ -9,7 +9,21 @@
       "Bash(sudo sed -i 's|    location = /notenrechner {|    location = /klausurenplan {\\\\n        try_files /klausurenplan.html =404;\\\\n    }\\\\n\\\\n    location = /notenrechner {|' /etc/nginx/sites-available/ifb.lol)",
       "Bash(sudo sed -i 's|    location = /notenrechner {\\\\n        try_files /notenrechner.html =404;\\\\n    }\\\\n|    location = /notenrechner {\\\\n        try_files /notenrechner.html =404;\\\\n    }\\\\n\\\\n    location = /dashboard {\\\\n        try_files /dashboard.html =404;\\\\n    }\\\\n|' /etc/nginx/sites-available/ifb.lol)",
       "Bash(sudo python3 *)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(git -C \"z:\\\\AAA\\\\IFB\\\\WEB-Webentwicklung\\\\stundenplan-site\" ls-files)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(cd \"z:\\\\AAA\\\\IFB\\\\WEB-Webentwicklung\\\\stundenplan-site\" && cat /tmp/server.log; ps aux | grep http.server)",
+      "Read(//tmp/**)",
+      "Bash(npm ls *)",
+      "Bash(cd \"Z:/AAA/IFB/WEB-Webentwicklung/stundenplan-site/prototyp-stundenplan-site\" && rm -f shot_*.png)",
+      "Bash(git mv *)",
+      "Bash(git rm *)",
+      "Bash(xxd)",
+      "Bash(cd \"Z:/AAA/IFB/WEB-Webentwicklung/stundenplan-site\" && rm -f shot_*.png)"
+    ],
+    "additionalDirectories": [
+      "Z:\\AAA\\IFB\\WEB-Webentwicklung\\stundenplan-site"
     ]
   }
 }
