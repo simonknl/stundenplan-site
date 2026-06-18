@@ -4,6 +4,7 @@
 <script>document.documentElement.dataset.theme=localStorage.getItem('sp-theme')==='dark'?'dark':'light';</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="IFB-Wochenplan mit aktueller Stunde, Klausuren und Klassenlinks.">
 <meta name="theme-color" content="#1f7a3d">
 <title>Dashboard · IFB Klassenportal</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
@@ -27,7 +28,7 @@
     <div class="topbar-meta">
       <span id="clockTime">--:--:--</span>
       <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">GitHub</a>
-      <button class="icon-btn" id="themeBtn" title="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
+      <button class="icon-btn" id="themeBtn" type="button" title="Theme wechseln" aria-label="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
     </div>
   </div>
 </div>
@@ -86,7 +87,7 @@
       <div class="card-head">
         <i data-lucide="calendar-days" style="width:14px;height:14px" class="chi"></i>
         <h2 id="ttTitle">Wochenplan</h2>
-        <button class="icon-btn" id="icalBtn" title="iCal exportieren" style="margin-left:auto;width:30px;height:30px">
+        <button class="icon-btn" id="icalBtn" type="button" title="iCal exportieren" aria-label="iCal exportieren" style="margin-left:auto;width:30px;height:30px">
           <i data-lucide="download" style="width:13px;height:13px"></i>
         </button>
       </div>
@@ -115,6 +116,18 @@
 
 </div>
 <div id="cellTip" class="cell-tip"></div>
+
+<!-- Search Modal -->
+<div class="search-modal" id="searchModal">
+  <div class="search-modal-box">
+    <div class="search-modal-header">
+      <input type="text" id="searchInput" placeholder="Suche nach Fächern, Lehrern..." autocomplete="off">
+      <button class="search-modal-clear" id="searchClear" type="button" aria-label="Suche schließen"><i data-lucide="x" style="width:20px;height:20px"></i></button>
+    </div>
+    <div class="search-modal-results" id="searchResults"></div>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script>
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -612,12 +625,131 @@ document.getElementById('icalBtn').addEventListener('click',exportIcal);
 setInterval(()=>{updateClock();updateBanner();},1000);
 setInterval(()=>{renderTT();renderToday();},30000);
 lucide.createIcons();
+
+// ─── SEARCH FUNCTIONALITY ───────────────────────────────────────────────────
+let searchActive = false;
+const searchModal = document.getElementById('searchModal');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const searchClear = document.getElementById('searchClear');
+
+function openSearch() {
+  searchModal.classList.add('active');
+  searchActive = true;
+  searchInput.focus();
+}
+
+function closeSearch() {
+  searchModal.classList.remove('active');
+  searchActive = false;
+  searchInput.value = '';
+  searchResults.innerHTML = '';
+  clearSearchHighlight();
+}
+
+function clearSearchHighlight() {
+  document.querySelectorAll('.tt-cell').forEach(c => c.classList.remove('search-match'));
+}
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    if (searchActive) closeSearch();
+    else openSearch();
+  }
+  if (e.key === 'Escape' && searchActive) closeSearch();
+});
+
+searchClear.addEventListener('click', closeSearch);
+
+searchModal.addEventListener('click', e => {
+  if (e.target === searchModal) closeSearch();
+});
+
+searchInput.addEventListener('input', e => {
+  const query = e.target.value.toLowerCase().trim();
+  clearSearchHighlight();
+  
+  if (!query) {
+    searchResults.innerHTML = '';
+    return;
+  }
+
+  const matchingLessons = [];
+  const sched = SCHED[selCls];
+  const seenLessons = new Set();
+  
+  // Search in timetable
+  for (let di = 0; di < 5; di++) {
+    const dayName = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'][di];
+    for (let pi = 0; pi < PERIODS.length; pi++) {
+      const l = sched[di][pi];
+      if (!l) continue;
+      
+      const subjName = sm(l.s).l.toLowerCase();
+      const teacher = (l.t || '').toLowerCase();
+      const period = PERIODS[pi];
+      
+      // Match by subject or teacher
+      if (subjName.includes(query) || teacher.includes(query)) {
+        const lessonKey = `${di}-${pi}`;
+        if (!seenLessons.has(lessonKey)) {
+          matchingLessons.push({s: l.s, t: l.t, r: l.r, di, pi, dayName, period});
+          seenLessons.add(lessonKey);
+        }
+      }
+    }
+  }
+
+  if (matchingLessons.length === 0) {
+    searchResults.innerHTML = '<div class="search-empty">Keine Ergebnisse gefunden</div>';
+    return;
+  }
+
+  let html = '';
+  for (const lesson of matchingLessons) {
+    const m = sm(lesson.s);
+    html += `<div class="search-result-lesson-item ${m.c}" data-lesson-di="${lesson.di}" data-lesson-pi="${lesson.pi}" data-lesson-subj="${lesson.s}">
+      <div class="search-result-dot" style="background:var(--sc)"></div>
+      <div class="search-result-lesson-info">
+        <div class="search-result-name">${m.l}</div>
+        <div class="search-result-meta">${lesson.dayName} · ${lesson.period.s}–${lesson.period.e} Uhr · ${lesson.t}</div>
+      </div>
+    </div>`;
+  }
+
+  searchResults.innerHTML = html;
+  document.querySelectorAll('[data-lesson-di]').forEach(el => {
+    el.addEventListener('click', () => {
+      const di = parseInt(el.dataset.lessonDi);
+      const pi = parseInt(el.dataset.lessonPi);
+      const subj = el.dataset.lessonSubj;
+      closeSearch();
+      clearHighlight();
+      activeSubj = subj;
+      highlightSubj(subj);
+      const matchingCell = document.querySelector(`.tt-cell[data-subj="${subj}"]`);
+      if (matchingCell) {
+        matchingCell.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        showTip(matchingCell, matchingCell._lesson, pi);
+      }
+    });
+  });
+});
+
+// Prevent search input from closing on Escape within modal
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeSearch();
+  }
+});
 </script>
+
 <footer>
   <div class="footer-inner">
     <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
     <a href="datenschutz.html">Datenschutz</a>
-    <a href="#" id="cookieSettingsLink">Cookie-Einstellungen</a>
+    <a href="#" id="cookieSettingsLink">Datenschutz-Einstellungen</a>
   </div>
 </footer>
 <script src="cookie-consent.js"></script>

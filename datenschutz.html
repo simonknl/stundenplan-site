@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="de" data-theme="light">
 <head>
+<script>document.documentElement.dataset.theme=localStorage.getItem('sp-theme')==='dark'?'dark':'light';</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Datenschutzhinweise zum IFB Klassenportal, lokaler Speicherung und externen Ressourcen.">
 <meta name="theme-color" content="#1f7a3d">
 <title>Datenschutzerklärung · IFB Klassenportal</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
@@ -26,7 +28,7 @@
     <div class="topbar-meta">
       <span id="clockTime">--:--:--</span>
       <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">GitHub</a>
-      <button class="icon-btn" id="themeBtn" title="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
+      <button class="icon-btn" id="themeBtn" type="button" title="Theme wechseln" aria-label="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
     </div>
   </div>
 </div>
@@ -108,7 +110,7 @@
   <ul>
     <li><strong>Theme-Einstellung</strong> (Hell-/Dunkelmodus) – damit Ihre bevorzugte Darstellung beim nächsten Besuch erhalten bleibt.</li>
     <li><strong>Notenrechner-Daten</strong> (Fächer, Noten, Gewichtungen) – damit Ihre Eingaben im Notenrechner nicht verloren gehen.</li>
-    <li><strong>Cookie-Einstellung</strong> – Ihre Auswahl im Cookie-Hinweis dieser Seite, damit dieser nicht erneut angezeigt wird.</li>
+    <li><strong>Hinweis-Einstellung</strong> – Ihre Auswahl im Datenschutz-Hinweis dieser Seite, damit dieser nicht erneut angezeigt wird.</li>
   </ul>
   <p>
     Diese Speicherung ist gemäß § 25 Abs. 2 Nr. 2 TTDSG zulässig, da sie unbedingt erforderlich ist, um einen von Ihnen
@@ -162,7 +164,7 @@
   <p>
     Diese Website setzt selbst <strong>keine Cookies</strong> ein. Es findet kein Tracking, keine Analyse des
     Nutzerverhaltens und keine Einbindung von Werbe- oder Social-Media-Diensten statt. Der beim ersten Besuch eingeblendete
-    Cookie-Hinweis dient ausschließlich der Information über die in Abschnitt 4 und 5 beschriebene, technisch notwendige
+    Datenschutz-Hinweis dient ausschließlich der Information über die in Abschnitt 4 und 5 beschriebene, technisch notwendige
     lokale Speicherung bzw. den Aufruf externer Ressourcen.
   </p>
 
@@ -209,7 +211,7 @@
   <div class="footer-inner">
     <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
     <a href="datenschutz.html">Datenschutz</a>
-    <a href="#" id="cookieSettingsLink">Cookie-Einstellungen</a>
+    <a href="#" id="cookieSettingsLink">Datenschutz-Einstellungen</a>
   </div>
 </footer>
 

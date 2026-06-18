@@ -1,145 +1,50 @@
-# Schulverwaltungs-Website · IFB
+# IFB Klassenportal
 
-Eine moderne, benutzerfreundliche Web-Anwendung für Schüler zur Verwaltung von Stundenplänen, Klausurterminen und Notenberechnung.
+Statische Website für Stundenplan, Klausurenplan und Notenrechner der IFB-Klassen.
 
-## Features
+Die Seite läuft ohne Backend: HTML, CSS und JavaScript werden direkt im Browser geladen. Stundenplan- und Klausurdaten liegen in `data.js`; Noten aus dem Notenrechner bleiben nur im `localStorage` des jeweiligen Browsers.
 
-### 📅 Stundenplan
-- Übersichtliche Stundenplandarstellung
-- Einfache Navigation durch alle Unterrichtstage
-- Aktuelle PDF-Version verfügbar
-- Responsive Design für Mobile und Desktop
+## Seiten
 
-### 📝 Klausurenplan
-- Verwaltung aller Klausurtermine
-- Sortierte Anzeige nach Datum
-- PDF-Export des gesamten Klausurenplans
-- Einfache Übersicht über anstehende Prüfungen
+- `index.html` - Einstieg mit Links zu den Bereichen und PDF-Downloads
+- `stundenplan.html` - Wochenplan, aktuelle Stunde, nächste Klausur und Klassenlinks
+- `klausurenplan.html` - Klausurtermine nach Klasse und Datum
+- `notenrechner.html` - Fächer, gewichtete Noten, CSV-Import/Export und PDF-Export
+- `datenschutz.html` - Hinweise zu lokaler Speicherung, Hosting und externen Ressourcen
+- `legacy/` - alte Version als Archiv
 
-### 🔢 Notenrechner
-Der erweiterte Notenrechner mit den folgenden Funktionen:
+## Nutzung
 
-#### Fächer-Management
-- Beliebig viele Fächer erstellen (Deutsch, Mathematik, Englisch, etc.)
-- Separate Notenverwaltung pro Fach
-- Fächer hinzufügen und löschen
+Die Seite kann direkt aus dem Dateisystem geöffnet werden. Ein lokaler Server ist nicht zwingend nötig.
 
-#### Notenberechnung
-- Einfaches Notensystem (1-6 Skala)
-- Gewichtete Notenberechnung
-- Voreingestellte Kategorien:
-  - Schulaufgabe (2× gewichtet)
-  - Kurzarbeit (1,5× gewichtet)
-  - Examen, Mündlich, Referat (1× gewichtet)
-
-#### Notenstufen
-- 1,0-1,5 = sehr gut
-- 1,6-2,5 = gut
-- 2,6-3,5 = befriedigend
-- 3,6-4,5 = ausreichend
-- 4,6-5,5 = mangelhaft
-- 5,6-6,0 = ungenügend
-
-#### Export & Import
-- **CSV Export** - Pro Fach als Tabellendatei (z.B. für Excel)
-- **PDF Export** - Professionell formatierte PDF mit Datum und Schnitt
-- **CSV Import** - Noten aus Dateien wiederherstellen
-
-#### Zusätzliche Features
-- **Gesamtschnitt** - Automatische Berechnung des Durchschnitts über alle Fächer
-- **Dark Mode** - Theme-Wechsel zwischen Hell und Dunkel
-- **Lokale Speicherung** - Alle Daten werden lokal im Browser gespeichert (keine Cloud-Abhängigkeit)
-- **Responsive Design** - Perfekt auf Mobile, Tablet und Desktop
-
-## Technologie
-
-### Frontend
-- **HTML5** - Strukturierung
-- **CSS3** - Styling mit CSS-Variablen für Theme-Management
-- **JavaScript (ES6+)** - Logik und Interaktivität
-- **Lucide Icons** - Moderne Icon-Bibliothek
-
-### Libraries
-- `html2pdf.js` - PDF-Generierung direkt im Browser
-- `Lucide Icons` - Hochwertige SVG-Icons
-
-### Speicherung
-- **localStorage** - Persistente Speicherung aller Daten lokal im Browser
-- Keine externe Datenbank notwendig
-
-## Installation & Nutzung
-
-### Browser öffnen
-1. Clone oder Download dieses Repositories
-2. Öffne eine der HTML-Dateien direkt im Browser:
-   - `index.html` - Startseite
-   - `stundenplan.html` - Stundenplan
-   - `klausurenplan.html` - Klausurenplan
-   - `notenrechner.html` - Notenrechner
-
-Keine Installation oder Server-Setup erforderlich!
-
-### Notenrechner - Schnellstart
-1. **Fach erstellen:** Klick auf das `+` Icon in den Fächer-Tabs
-2. **Noten eingeben:** 
-   - Nutze vordefinierte Kategorien oder füge manuell Einträge hinzu
-   - Gib Note (1-6) und Gewicht ein
-3. **Schnitt berechnen:** Wird automatisch aktualisiert
-4. **Exportieren:** CSV für Tabellenkalkulation oder PDF zum Ausdrucken
-
-### Daten sichern
-- **CSV Import/Export** nutzen, um Daten zu sichern oder zwischen Geräten zu übertragen
-- Lokale Daten bleiben auch nach Browser-Neustart erhalten
-
-## Projektstruktur
-
-```
-stundenplan-site/
-├── index.html           # Startseite / Navigation
-├── stundenplan.html     # Stundenplan-Seite
-├── klausurenplan.html   # Klausurenplan-Seite
-├── notenrechner.html    # Notenrechner (Hauptfeature)
-├── style.css            # Gemeinsames Stylesheet
-├── data.js              # Gemeinsame Daten (Klassen, Fächer, Klausurtermine)
-├── favicon.svg          # Website-Icon
-├── README.md            # Diese Datei
-├── PDF-Dateien          # Stundenplan und Klausurenplan als PDF
-└── legacy/              # Vorherige Version der Seite (Archiv)
+```text
+index.html
+stundenplan.html
+klausurenplan.html
+notenrechner.html
 ```
 
-## Features im Detail
+Für GitHub Pages oder einen anderen statischen Hoster müssen nur die Dateien aus diesem Ordner veröffentlicht werden.
 
-### Light/Dark Mode
-- Automatische Erkennung der Systemeinstellung
-- Manueller Theme-Wechsel via Button
-- Speicherung der Präferenz
+## Externe Ressourcen
 
-### Responsive Design
-- Mobile-first Ansatz
-- Optimiert für alle Bildschirmgrößen
-- Touch-freundliche Bedienung
+Aktuell werden diese Bibliotheken per CDN geladen:
 
-### Offline-Fähigkeit
-- Funktioniert vollständig offline
-- Keine Internet-Verbindung nach dem Laden erforderlich
-- Alle Daten lokal gespeichert
+- Google Fonts für `Inter`
+- Lucide Icons für UI-Symbole
+- html2pdf.js nur auf `notenrechner.html`
 
-## Browser-Kompatibilität
+Wenn die Seite komplett ohne externe Requests laufen soll, sollten diese Assets lokal eingebunden und die Hinweise in `datenschutz.html` angepasst werden.
 
-Unterstützt alle modernen Browser:
-- ✅ Chrome/Edge (ab v90)
-- ✅ Firefox (ab v88)
-- ✅ Safari (ab v14)
-- ✅ Mobile Browser (iOS Safari, Chrome Mobile)
+## Datenpflege
 
-## Lizenz
+- Klassen, Fächer, Klausuren und Ferien: `data.js`
+- Wochenpläne: aktuell direkt in `stundenplan.html`
+- Gemeinsames Styling: `style.css`
+- Cookie-/Datenschutzhinweis: `cookie-consent.js`
 
-Dieses Projekt ist für Schulzwecke gedacht.
+## Hinweise
 
-## Support
-
-Fragen oder Probleme? Erstelle bitte ein Issue im GitHub Repository.
-
----
-
-**Made with ❤️ für Schüler der IFB**
+- Der Notenrechner speichert Daten nur lokal im Browser.
+- Beim Löschen der Browserdaten gehen lokale Notenrechner-Daten verloren.
+- PDF-Downloads im Repository sind Momentaufnahmen und müssen bei neuen Plänen ersetzt werden.

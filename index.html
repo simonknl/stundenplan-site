@@ -4,6 +4,7 @@
 <script>document.documentElement.dataset.theme=localStorage.getItem('sp-theme')==='dark'?'dark':'light';</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Stundenplan, Klausurenplan und Notenrechner für IFB-Klassen.">
 <meta name="theme-color" content="#1f7a3d">
 <title>IFB · Klassenportal</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
@@ -27,7 +28,7 @@
     <div class="topbar-meta">
       <span id="clockTime">--:--:--</span>
       <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">GitHub</a>
-      <button class="icon-btn" id="themeBtn" title="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
+      <button class="icon-btn" id="themeBtn" type="button" title="Theme wechseln" aria-label="Theme wechseln"><i data-lucide="moon" style="width:15px;height:15px" id="themeIcon"></i></button>
     </div>
   </div>
 </div>
@@ -44,7 +45,7 @@
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">Alle Klassen · Info1 · Info2 · Freko1 · Freko2 · MR</div>
-    <h1>Dein Stundenplan, Klausurtermine &amp; Noten - an einem Ort.</h1>
+    <h1>Stundenplan, Klausuren &amp; Noten an einem Ort.</h1>
     <p>Das Klassenportal bündelt Wochenplan, Klausurenplan und einen Notenrechner für alle IFB-Klassen. Direkt im Browser, ohne Anmeldung.</p>
     <div class="hero-actions">
       <a class="btn btn-light" href="stundenplan.html">Zum Dashboard</a>
@@ -106,7 +107,7 @@
     <a href="https://github.com/simonknl/stundenplan-site" target="_blank" rel="noopener">github.com/simonknl/stundenplan-site</a>
     <a href="legacy/index.html">Alte Version</a>
     <a href="datenschutz.html">Datenschutz</a>
-    <a href="#" id="cookieSettingsLink">Cookie-Einstellungen</a>
+    <a href="#" id="cookieSettingsLink">Datenschutz-Einstellungen</a>
   </div>
 </footer>
 

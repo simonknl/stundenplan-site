@@ -4,8 +4,8 @@
   function getConsent(){
     try{return JSON.parse(localStorage.getItem(STORAGE_KEY));}catch(e){return null;}
   }
-  function saveConsent(external){
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({necessary:true,external:!!external,date:new Date().toISOString()}));
+  function saveConsent(){
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({acknowledged:true,date:new Date().toISOString()}));
   }
 
   function buildBanner(){
@@ -15,28 +15,25 @@
     el.innerHTML=`
       <div class="cookie-banner-inner">
         <div class="cookie-banner-text">
-          <h2>Diese Website respektiert deine Privatsphäre</h2>
+          <h2>Datenschutzhinweis</h2>
           <p>
-            Wir verwenden ausschließlich technisch notwendige lokale Speicherung (z. B. für Theme und Notenrechner-Daten)
-            und binden externe Schriftarten/Icons per CDN ein. Es findet kein Tracking und keine Analyse statt.
-            Details findest du in unserer <a href="datenschutz.html">Datenschutzerklärung</a>.
+            Diese Seite speichert Theme, Klasse und Notenrechner-Daten lokal in deinem Browser.
+            Außerdem werden Schriftarten und Icons per CDN geladen. Es gibt kein Tracking und keine Analyse.
+            Details stehen in der <a href="datenschutz.html">Datenschutzerklärung</a>.
           </p>
           <div class="cookie-banner-groups hidden" id="cookieGroups">
-            <label class="cg-item">
-              <input type="checkbox" checked disabled>
-              <div><strong>Notwendig</strong><span>Lokale Speicherung für Theme &amp; Notenrechner. Kann nicht deaktiviert werden.</span></div>
-            </label>
-            <label class="cg-item">
-              <input type="checkbox" id="cookieExternal" checked>
-              <div><strong>Externe Inhalte</strong><span>Schriftarten (Google Fonts) und Icons (Lucide/CDN) zur Darstellung der Seite.</span></div>
-            </label>
+            <div class="cg-item">
+              <div><strong>Lokale Speicherung</strong><span>Theme, ausgewählte Klasse und Notenrechner-Daten bleiben auf diesem Gerät.</span></div>
+            </div>
+            <div class="cg-item">
+              <div><strong>Externe Ressourcen</strong><span>Google Fonts, Lucide Icons und auf dem Notenrechner html2pdf.js werden per CDN geladen.</span></div>
+            </div>
           </div>
         </div>
         <div class="cookie-banner-actions">
-          <button class="modal-btn" id="cookieSettingsBtn" type="button">Einstellungen</button>
+          <button class="modal-btn" id="cookieSettingsBtn" type="button">Details</button>
           <div class="btn-row">
-            <button class="modal-btn" id="cookieRejectBtn" type="button">Nur notwendige</button>
-            <button class="modal-btn primary" id="cookieAcceptBtn" type="button">Alle akzeptieren</button>
+            <button class="modal-btn primary" id="cookieAcceptBtn" type="button">Verstanden</button>
           </div>
         </div>
       </div>`;
@@ -46,18 +43,8 @@
       el.querySelector('#cookieGroups').classList.toggle('hidden');
     });
     el.querySelector('#cookieAcceptBtn').addEventListener('click',()=>{
-      const ext=el.querySelector('#cookieExternal');
-      saveConsent(ext?ext.checked:true);
+      saveConsent();
       hideBanner();
-    });
-    el.querySelector('#cookieRejectBtn').addEventListener('click',()=>{
-      saveConsent(false);
-      hideBanner();
-    });
-    el.querySelector('#cookieGroups').addEventListener('change',(e)=>{
-      if(e.target.id==='cookieExternal'){
-        el.querySelector('#cookieAcceptBtn').textContent=e.target.checked?'Alle akzeptieren':'Auswahl speichern';
-      }
     });
     return el;
   }
